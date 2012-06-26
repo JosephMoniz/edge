@@ -1,8 +1,8 @@
 CC?=g++
 
-UVDIR=deps/libuv
-HTTPDIR=deps/http-parser
-YAJLDIR=deps/yajl
+UVDIR=dep/libuv
+HTTPDIR=dep/http-parser
+YAJLDIR=dep/yajl
 BUILDDIR=build
 SRCDIR=src
 
@@ -10,7 +10,7 @@ CFLAGS += -Wall
 CFLAGS += -Wextra
 CFLAGS += -Werror
 CFLAGS += -Wno-unused-parameter
-CFLAGS += DEV_MULTIPLICITY=1
+CFLAGS += -DEV_MULTIPLICITY=1
 
 CFLAGS_FAST = $(CFLAGS) -O3
 CFLAGS_DEBUG = $(CFLAGS) -O0 -g
@@ -22,11 +22,11 @@ INCLUDES = -I$(UVDIR)/include   \
 
 OBJ = $(BUILDDIR)/main.o
 
-DEPS = $(UVDIR)/uv.a            \
+DEP = $(UVDIR)/uv.a            \
        $(YAJLDIR)/yajl.a        \
        $(HTTPDIR)/http_parser.o
 
-$($BUILDDIR)/node: $(DEPS) $(OBJ)
+$($BUILDDIR)/node: $(DEP) $(OBJ)
 	$(CC) $(CFLAGS_FAST) -o $@ $^
 
 $(UVDIR)/Makefile:
@@ -38,11 +38,11 @@ $(UVDIR)/uv.a: $(UVDIR)/Makefile
 $(YAJLDIR)/CMakeLists.txt:
 	git submodule update --init $(BASEDIR)/$(YAJLDIR)
 
-$(YAJLDIR)/Makefile: deps/Makefile.yajl $(YAJLDIR)/CMakeLists.txt
-	cp deps/Makefile.yajl $(YAJLDIR)/Makefile
+$(YAJLDIR)/Makefile: dep/Makefile.yajl $(YAJLDIR)/CMakeLists.txt
+	cp dep/Makefile.yajl $(YAJLDIR)/Makefile
 
 $(YAJLDIR)/yajl.a: $(YAJLDIR)/Makefile
-	rm -rf $(YAJLDIR)/src/yajl
+	rm -rf $(YAJLDIR)/yajl
 	cp -r $(YAJLDIR)/src/api $(YAJLDIR)/$(SRCDIR)/yajl
 	$(MAKE) -C $(YAJLDIR)
 
@@ -55,7 +55,7 @@ $(HTTPDDIR)/http_parser.o: $(HTTPDIR)/Makefile
 tag:
 	etags $(SRCDIR)/*.cc
 
-deps:
+dep:
 	$(CC) -MM $(SRCDIR)/*.cc $(INCLUDES)
 
 clean:
@@ -68,4 +68,4 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cc
 	mkdir -p $(BUILDDIR)
 	$(CC) $(CFLAGS_FAST) $(INCLUDES) -c $< -o $@
 
-.PHONY: tag deps clean
+.PHONY: tag dep clean
