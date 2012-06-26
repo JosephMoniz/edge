@@ -1,0 +1,9 @@
+[submodule "dep/libuv"]
+	path = dep/libuv
+	url = https://github.com/joyent/libuv.git
+[submodule "dep/http-parser"]
+	path = dep/http-parser
+	url = https://github.com/joyent/http-parser.git
+[submodule "dep/yajl"]
+	path = dep/yajl
+	url = https://github.com/lloyd/yajl.git
