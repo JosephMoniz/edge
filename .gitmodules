@@ -6,4 +6,4 @@
 	url = https://github.com/joyent/http-parser.git
 [submodule "dep/yajl"]
 	path = dep/yajl
-	url = https://github.com/lloyd/yajl.git
+	url = git://github.com/lloyd/yajl.git
