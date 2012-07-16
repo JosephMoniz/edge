@@ -50,7 +50,7 @@ std::string node::QueryString::stringify(node::QueryStringMap query) {
       resolved += "&";
     }
   }
-  resolved.erase(resolved.end());
+  if (resolved.length()) { resolved.erase(resolved.end() - 1); }
 
   return resolved;
 }

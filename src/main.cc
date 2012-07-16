@@ -10,6 +10,7 @@
 
 #include "path.h"
 #include "eventemitter.h"
+#include "querystring.h"
 
 int main(int argc, char **argv) {
   std::cout << "== Testing extname" << std::endl;
@@ -92,5 +93,20 @@ int main(int argc, char **argv) {
   emitter.removeAllListeners("test");
   emitter.emit("test", nullptr);
   std::cout << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "== Parsing query string" << std::endl;
+  auto queryString = node::QueryString::parse("key=value&works=true&works=yes");
+  for (auto &pair : queryString) {
+    for (auto &value : pair.second) {
+      std::cout << pair.first << "=" << value << std::endl;
+    }
+  }
+  std::cout << std::endl;
+
+  std::cout << "== Testing stringify" << std::endl;
+  std::cout << node::QueryString::stringify(queryString) << std::endl;
+
+
 
 }

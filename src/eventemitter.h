@@ -1,3 +1,6 @@
+#ifndef NODE_EVENT_EMITTER_H_
+#define NODE_EVENT_EMITTER_H_ 1
+
 #include <string>
 #include <map>
 #include <vector>
@@ -97,3 +100,5 @@ private:
   std::map<std::string, std::vector<std::function<void(void*)>>> _once;
 };
 }
+
+#endif

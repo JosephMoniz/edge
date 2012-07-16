@@ -23,6 +23,7 @@ INCLUDES = -I$(UVDIR)/include   \
 
 OBJ = $(BUILDDIR)/path.o         \
       $(BUILDDIR)/eventemitter.o \
+      $(BUILDDIR)/querystring.o  \
       $(BUILDDIR)/main.o
 
 DEP = $(UVDIR)/uv.a            \

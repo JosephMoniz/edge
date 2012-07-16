@@ -1,3 +1,6 @@
+#ifndef NODE_PATH_H_
+#define NODE_PATH_H_ 1
+
 #include <string>
 #include <initializer_list>
 
@@ -105,3 +108,5 @@ private:
 
 };
 }
+
+#endif

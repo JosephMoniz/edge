@@ -1,3 +1,6 @@
+#ifndef NODE_QUERY_STRING_H_
+#define NODE_QUERY_STRING_H_ 1
+
 #include <string>
 #include <map>
 #include <vector>
@@ -26,3 +29,5 @@ public:
 
 };
 }
+
+#endif
