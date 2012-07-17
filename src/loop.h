@@ -1,9 +1,7 @@
 #ifndef NODE_LOOP_H_
 #define NODE_LOOP_H_ 1
 
-#include <string>
-#include <map>
-#include <vector>
+#include "uv.h"
 
 namespace node {
 class Loop {
@@ -28,6 +26,11 @@ public:
    *
    */
   int runOnce();
+
+  /**
+   *
+   */
+  uv_loop_t* getUVLoop();
 
  private:
 

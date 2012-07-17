@@ -1,5 +1,4 @@
 #include "loop.h"
-#include "uv.h"
 
 node::Loop() {
   this->_loop = uv_loop_new();
@@ -21,6 +20,10 @@ int node::Loop::run() {
   return uv_run(this->_loop);
 }
 
-int node::loop::runOnce() {
+int node::Loop::runOnce() {
   return uv_run_once(this->_loop);
+}
+
+uv_loopt_t* node::Loop::getUVLoop() {
+  return this->_loop;
 }
