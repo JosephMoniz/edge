@@ -8,11 +8,20 @@
 #include <vector>
 #include <array>
 
+#include "loop.h"
 #include "path.h"
 #include "eventemitter.h"
 #include "querystring.h"
 
 int main(int argc, char **argv) {
+
+  auto loop = node::Loop::getDefault();
+
+  loop->run();
+
+  return 0;
+
+  /**
   std::cout << "== Testing extname" << std::endl;
   std::cout << "lolwat.jpg: " << node::Path::extname("lolwat.jpg") << std::endl;
   std::cout << "/a/wat.jpg: " << node::Path::extname("/a/wat.jpg") << std::endl;
@@ -107,6 +116,5 @@ int main(int argc, char **argv) {
   std::cout << "== Testing stringify" << std::endl;
   std::cout << node::QueryString::stringify(queryString) << std::endl;
 
-
-
+  */
 }
