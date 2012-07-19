@@ -24,11 +24,13 @@ INCLUDES = -I$(UVDIR)/include   \
 OBJ = $(BUILDDIR)/path.o         \
       $(BUILDDIR)/eventemitter.o \
       $(BUILDDIR)/querystring.o  \
+      $(BUILDDIR)/loop.o         \
+      $(BUILDDIR)/timers.o       \
       $(BUILDDIR)/main.o
 
 DEP = $(UVDIR)/uv.a            \
-       $(YAJLDIR)/yajl.a        \
-       $(HTTPDIR)/http_parser.o
+      $(YAJLDIR)/yajl.a        \
+      $(HTTPDIR)/http_parser.o
 
 $(BUILDDIR)/node: $(DEP) $(OBJ)
 	$(CC) $(CFLAGS_FAST) -o $@ $^
