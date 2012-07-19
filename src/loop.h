@@ -34,14 +34,11 @@ public:
 
  private:
 
-  Logger();
-
-  Logger(Logger const&) { };
-
-  Logger& operator=(Logger const&) { };
-
-  static node::Loop* _instance = nullptr;
   uv_loop_t* _loop;
+
+  Loop();
+
+  Loop(Loop const&) { };
 
 };
 }

@@ -9,13 +9,18 @@
 #include <array>
 
 #include "loop.h"
+#include "timers.h"
 #include "path.h"
 #include "eventemitter.h"
 #include "querystring.h"
 
 int main(int argc, char **argv) {
-
   auto loop = node::Loop::getDefault();
+
+  node::Timer timer;
+  timer.start([](node::Timer* self, int status) {
+    std::cout << "ping" << std::endl;
+  }, 3000, 0);
 
   loop->run();
 

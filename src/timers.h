@@ -32,7 +32,7 @@ public:
   /**
    *
    */
-  int setRepeat(int64_t repeat);
+  void setRepeat(int64_t repeat);
 
   /**
    *
@@ -51,13 +51,13 @@ public:
 
  private:
   uv_timer_t _timer;
-  void* data;
+  void* _data;
   std::function<void(node::Timer*, int)> _cb;
 
   /**
    *
    */
-  void _wrapper(uv_timer_t* handle, int status);
+  static void _wrapper(uv_timer_t* handle, int status);
 };
 }
 

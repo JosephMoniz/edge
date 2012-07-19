@@ -1,6 +1,7 @@
-#include "timer.h"
+#include "loop.h"
+#include "timers.h"
 
-node::Timer() {
+node::Timer::Timer() {
   auto node_loop = node::Loop::getDefault();
   auto uv_loop = node_loop->getUVLoop();
   uv_timer_init(uv_loop, &this->_timer);
@@ -10,7 +11,7 @@ node::Timer() {
 int node::Timer::start(std::function<void(node::Timer*, int)> cb,
                        int64_t timeout, int64_t repeat) {
   this->_cb = cb;
-  return uv_timer_start(this->_wrapper, timeout, repeat);
+  return uv_timer_start(&this->_timer, node::Timer::_wrapper, timeout, repeat);
 }
 
 int node::Timer::stop() {
@@ -21,11 +22,11 @@ int node::Timer::again() {
   return uv_timer_again(&this->_timer);
 }
 
-int node::Timer::setRepeat(int64_t repeat) {
-  return uv_timer_set_repeat(&this->_timer, repeat);
+void node::Timer::setRepeat(int64_t repeat) {
+  uv_timer_set_repeat(&this->_timer, repeat);
 }
 
-int node::Timer::getRepeat() {
+int64_t node::Timer::getRepeat() {
   return uv_timer_get_repeat(&this->_timer);
 }
 
@@ -38,6 +39,6 @@ void* node::Timer::getData() {
 }
 
 void node::Timer::_wrapper(uv_timer_t* handle, int status) {
-  node::Timer* timer = handle->data;
-  timer->_cb(timer, status)
+  node::Timer* timer = static_cast<node::Timer*>(handle->data);
+  timer->_cb(timer, status);
 }
