@@ -13,6 +13,11 @@ CFLAGS += -Wno-unused-parameter
 CFLAGS += -DEV_MULTIPLICITY=1
 CFLAGS += --std=c++11
 
+# unconditionally link against core services right now
+# eventually wrap this in a OS checking conditional
+# for now though this works because im working on a mac
+CFLAGS += -framework CoreServices
+
 CFLAGS_FAST = $(CFLAGS) -O3
 CFLAGS_DEBUG = $(CFLAGS) -O0 -g
 

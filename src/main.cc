@@ -17,15 +17,24 @@
 int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
+
+  loop->run();
+
+  /////// Testing out timers
+  /**
+  auto loop = node::Loop::getDefault();
+
   node::Timer timer;
   timer.start([](node::Timer* self, int status) {
     std::cout << "ping" << std::endl;
-  }, 3000, 0);
+  }, 1000, 1000);
 
   loop->run();
 
   return 0;
+  */
 
+  /////// Tests that don't depend on the event loop
   /**
   std::cout << "== Testing extname" << std::endl;
   std::cout << "lolwat.jpg: " << node::Path::extname("lolwat.jpg") << std::endl;
