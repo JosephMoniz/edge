@@ -2,8 +2,7 @@
 #include "timers.h"
 
 node::Timer::Timer() {
-  auto node_loop = node::Loop::getDefault();
-  auto uv_loop = node_loop->getUVLoop();
+  auto uv_loop = node::Loop::getDefault()->getUVLoop();
   uv_timer_init(uv_loop, &this->_timer);
   this->_timer.data = this;
 }
