@@ -1,4 +1,4 @@
-CC=/opt/local/bin/g++-mp-4.8
+CC=/opt/local/bin/g++-mp-4.7
 
 UVDIR=dep/libuv
 HTTPDIR=dep/http-parser
@@ -31,6 +31,7 @@ OBJ = $(BUILDDIR)/path.o         \
       $(BUILDDIR)/querystring.o  \
       $(BUILDDIR)/loop.o         \
       $(BUILDDIR)/timers.o       \
+      $(BUILDDIR)/net/socket.o   \
       $(BUILDDIR)/main.o
 
 DEP = $(UVDIR)/uv.a            \
@@ -41,13 +42,13 @@ $(BUILDDIR)/node: $(DEP) $(OBJ)
 	$(CC) $(CFLAGS_FAST) -o $@ $^
 
 $(UVDIR)/Makefile:
-	git submodule update --init $(BASEDIR)/$(UVDIR)
+	git submodule update --init $(UVDIR)
 
 $(UVDIR)/uv.a: $(UVDIR)/Makefile
 	$(MAKE) -C $(UVDIR) uv.a
 
 $(YAJLDIR)/CMakeLists.txt:
-	git submodule update --init $(BASEDIR)/$(YAJLDIR)
+	git submodule update --init $(YAJLDIR)
 
 $(YAJLDIR)/Makefile: dep/Makefile.yajl $(YAJLDIR)/CMakeLists.txt
 	cp dep/Makefile.yajl $(YAJLDIR)/Makefile
@@ -58,7 +59,7 @@ $(YAJLDIR)/yajl.a: $(YAJLDIR)/Makefile
 	$(MAKE) -C $(YAJLDIR)
 
 $(HTTPDIR)/Makefile:
-	git submodule update --init $(BASEDIR)/$(HTTPDIR)
+	git submodule update --init $(HTTPDIR)
 
 $(HTTPDDIR)/http_parser.o: $(HTTPDIR)/Makefile
 	$(MAKE) -C $(HTTPDIR) http_parser.o
@@ -77,6 +78,10 @@ clean:
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cc
 	mkdir -p $(BUILDDIR)
+	$(CC) $(CFLAGS_FAST) $(INCLUDES) -c $< -o $@
+
+$(BUILDDIR)/net/%.o: $(SRCDIR)/net/%.cc
+	mkdir -p $(BUILDDIR)/net
 	$(CC) $(CFLAGS_FAST) $(INCLUDES) -c $< -o $@
 
 .PHONY: tag dep clean
