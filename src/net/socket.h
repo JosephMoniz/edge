@@ -9,7 +9,21 @@
 
 namespace node {
 namespace net {
-class Socket {
+
+class Socket;
+
+typedef struct SocketWriterData_s {
+  uv_write_t writer;
+  std::function<void(void)> f;
+} SocketWriterData_t;
+
+typedef struct SocketConnectorData_s {
+  uv_connect_t connector;
+  std::function<void(void)> f;
+  node::net::Socket* self;
+} SocketConnectorData_t;
+
+class Socket : public EventEmitter {
 public:
 
   /**
@@ -35,6 +49,11 @@ public:
   /**
    *
    */
+  void connect(int port, const char* host, std::function<void(void)> f);
+
+  /**
+   *
+   */
   int getBufferSize();
 
   /**
@@ -45,7 +64,7 @@ public:
   /**
    *
    */
-  void write(void* data, size_t len, std::funciton<void(void)> f);
+  void write(void* data, size_t len, std::function<void(void)> f);
 
   /**
    *
@@ -95,16 +114,6 @@ public:
   /**
    *
    */
-  void pause();
-
-  /**
-   *
-   */
-  void resume();
-
-  /**
-   *
-   */
   void setTimeout(int timeout);
 
   /**
@@ -132,6 +141,52 @@ public:
    */
   std::map<std::string, std::string> address();
 
+private:
+  /**
+   *
+   */
+  uv_tcp_t _handle;
+  /**
+   *
+   */
+  SocketConnectorData_t _connect;
+  /**
+   *
+   */
+  struct sockaddr_in _addr;
+  /**
+   *
+   */
+  bool _isServer;
+  /**
+   *
+   */
+  bool _isConnected;
+
+  /**
+   *
+   */
+  static void _connectCb(uv_connect_t* req, int status);
+
+  /**
+   *
+   */
+  static void _writeCb(uv_write_t* req, int status);
+
+  /**
+   *
+   */
+  static uv_buf_t _allocCb(uv_handle_t* handle, size_t suggested_size);
+
+  /**
+   *
+   */
+  static void _readCb(uv_stream_t* stream, ssize_t nread, uv_buf_t buf);
+
+  /**
+   *
+   */
+  static void _closeCb(uv_handle_t* req);
 };
 }
 }
