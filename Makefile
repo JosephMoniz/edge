@@ -26,12 +26,13 @@ INCLUDES = -I$(UVDIR)/include   \
            -I$(YAJLDIR)/src/api \
            -I$(SRCDIR)
 
-OBJ = $(BUILDDIR)/path.o         \
-      $(BUILDDIR)/eventemitter.o \
-      $(BUILDDIR)/querystring.o  \
-      $(BUILDDIR)/loop.o         \
-      $(BUILDDIR)/timers.o       \
-      $(BUILDDIR)/net/socket.o   \
+OBJ = $(BUILDDIR)/path.o           \
+      $(BUILDDIR)/eventemitter.o   \
+      $(BUILDDIR)/querystring.o    \
+      $(BUILDDIR)/loop.o           \
+      $(BUILDDIR)/timers.o         \
+      $(BUILDDIR)/net/socket.o     \
+      $(BUILDDIR)/process/stdout.o \
       $(BUILDDIR)/main.o
 
 DEP = $(UVDIR)/uv.a            \
@@ -61,7 +62,7 @@ $(YAJLDIR)/yajl.a: $(YAJLDIR)/Makefile
 $(HTTPDIR)/Makefile:
 	git submodule update --init $(HTTPDIR)
 
-$(HTTPDDIR)/http_parser.o: $(HTTPDIR)/Makefile
+$(HTTPDIR)/http_parser.o: $(HTTPDIR)/Makefile
 	$(MAKE) -C $(HTTPDIR) http_parser.o
 
 tag:
@@ -77,11 +78,7 @@ clean:
 	$(MAKE) -C $(YAJLDIR) clean
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cc
-	mkdir -p $(BUILDDIR)
-	$(CC) $(CFLAGS_FAST) $(INCLUDES) -c $< -o $@
-
-$(BUILDDIR)/net/%.o: $(SRCDIR)/net/%.cc
-	mkdir -p $(BUILDDIR)/net
+	mkdir -p `dirname $@`
 	$(CC) $(CFLAGS_FAST) $(INCLUDES) -c $< -o $@
 
 .PHONY: tag dep clean
