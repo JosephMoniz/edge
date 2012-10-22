@@ -157,5 +157,6 @@ void node::net::Socket::_readCb(uv_stream_t* stream, ssize_t nread,
 }
 
 void node::net::Socket::_closeCb(uv_handle_t* req) {
-  // TODO: implement
+  node::net::Socket* self = (node::net::Socket*) req->data;
+  self->emit("end", nullptr);
 }
