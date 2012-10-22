@@ -6,7 +6,6 @@
 namespace node {
 class Loop {
 public:
-
   /**
    *
    */
@@ -33,12 +32,11 @@ public:
   uv_loop_t* getUVLoop();
 
  private:
-
-  uv_loop_t* _loop;
+  uv_loop_t* _loop = nullptr;
 
   Loop();
 
-  Loop(Loop const&) { };
+  Loop(node::Loop const&){};
 
 };
 }

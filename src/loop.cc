@@ -10,7 +10,7 @@ node::Loop* node::Loop::getDefault() {
 }
 
 void node::Loop::deleteDefault() {
-  uv_loop_delete(node::Loop::getDefault()->_loop);
+  uv_loop_delete(node::Loop::getDefault()->getUVLoop());
 }
 
 int node::Loop::run() {
