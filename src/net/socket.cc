@@ -16,6 +16,10 @@ void node::net::Socket::connect(int port) {
   this->connect(port, "127.0.0.1", nullptr);
 }
 
+void node::net::Socket::connect(int port, std::function<void(void)> f) {
+  this->connect(port, "127.0.0.1", f);
+}
+
 void node::net::Socket::connect(int port, const char* host) {
   this->connect(port, host, nullptr);
 }
@@ -38,7 +42,6 @@ int node::net::Socket::getBufferSize() {
   return 0;
 }
 
-// TODO: refactor if nullptr is aceptable as a std::function
 void node::net::Socket::write(void* data, size_t len) {
   this->write(data, len, nullptr);
 }
@@ -57,7 +60,6 @@ void node::net::Socket::write(void* data, size_t len,
   );
 }
 
-// TODO: refactor if nullptr is aceptable as a std::function
 void node::net::Socket::write(const char* data) {
   this->write((void*)data, strlen(data));
 }
