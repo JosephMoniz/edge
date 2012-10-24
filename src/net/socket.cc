@@ -43,11 +43,6 @@ int node::net::Socket::getBufferSize() {
 }
 
 void node::net::Socket::write(void* data, size_t len) {
-  this->write(data, len, nullptr);
-}
-
-void node::net::Socket::write(void* data, size_t len,
-                              std::function<void(void)> f) {
   auto container = new node::net::SocketWriterData_t;
   uv_buf_t buf = { .base = (char*)data, .len = len };
   container->f = f;
@@ -60,20 +55,16 @@ void node::net::Socket::write(void* data, size_t len,
   );
 }
 
+void node::net::Socket::write(uv_buf_t* buf) {
+  this->write(buf.base, buf.len);
+}
+
 void node::net::Socket::write(const char* data) {
   this->write((void*)data, strlen(data));
 }
 
-void node::net::Socket::write(const char* data, std::function<void(void)> f) {
-  this->write((void*)data, strlen(data), f);
-}
-
 void node::net::Socket::write(std::string data) {
   this->write((void*)data.c_str(), data.length());
-}
-
-void node::net::Socket::write(std::string data, std::function<void(void)> f) {
-  this->write((void*)data.c_str(), data.length(), f);
 }
 
 void node::net::Socket::end() {
@@ -93,6 +84,16 @@ void node::net::Socket::end(const char* data) {
 
 void node::net::Socket::end(std::string data) {
   this->end((void*)data.c_str(), data.length());
+}
+
+template <class WritableStream>
+void node::net::Socket::pipe(WritableStream *dest) {
+  this->on("data", [&dest](void *data) {
+    dest->write((uv_buf_t*) data);
+  });
+  this->on("end"[&dest](void *data) {
+    dest->end();
+  });
 }
 
 void node::net::Socket::setTimeout(int timeout) {

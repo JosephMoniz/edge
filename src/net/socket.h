@@ -94,16 +94,12 @@ public:
   void write(void* data, size_t len);
 
   /**
-   * This function writes `len` bytes worth of data starting at
-   * `data` to the underlying TCP stream and calls the supplied
-   * callback once the write has completed.
+   * This function writes a uv_buf_t to the underlying TCP stream
    *
-   * @param {void*} data      - The start of the data to write
-   * @param {size_t} len      - The ammount of data to write
-   * @param {std::function} f - The callback to call on completion
+   * @param {uv_buf_t*} buf - The uv_buf_t to write
    * @returns {void}
    */
-  void write(void* data, size_t len, std::function<void(void)> f);
+  void write(uv_buf_t* buf);
 
   /**
    * This function writes a zero terminated string and writes
@@ -115,17 +111,6 @@ public:
   void write(const char* data);
 
   /**
-   * This function takes a zero terminated string and writes
-   * it to the underlying TCP stream and calls the supplied
-   * callback once the write has completed.
-   *
-   * @param {const char*} data - The zero terminated string to write
-   * @param {std::function} f - The callback to call on completion
-   * @returns {void}
-   */
-  void write(const char* data, std::function<void(void)> f);
-
-  /**
    * This function takes a std::string and writes it to the
    * underlying TCP stream.
    *
@@ -133,17 +118,6 @@ public:
    * @returns {void}
    */
   void write(std::string data);
-
-  /**
-   * This function takes a std::string and writes it to the
-   * underlying TCP stream and calls the supplied callback
-   * when the write is completed
-   *
-   * @param {std::string} data - The std::string to write
-   * @param {std::function} f - The callback to call on completion
-   * @returns {void}
-   */
-  void write(std::string data, std::function<void(void)> f);
 
   /**
    * This function closes the underlying TCP stream and emits
@@ -183,6 +157,17 @@ public:
    * @returns {void}
    */
   void end(std::string data);
+
+  /**
+   * This function takes a writable stream and pipes all the data
+   * receiveved by the underlying TCP socket directly to the passed
+   * in writable stream
+   *
+   * @param {WritableStream*} dest - The writable stream to pipe to
+   * @returns {void}
+   */
+  template <class WritableStream>
+  void pipe(WritableStream* dest);
 
 
   /**
@@ -287,7 +272,7 @@ private:
   /**
    * This is the internal close callback that will get ran when the TCP
    * stream is closed and will emit an 'end' event when called
-   * 
+   *
    * @param {uv_handle_t} req - The stream handle
    * @returns {void}
    */
