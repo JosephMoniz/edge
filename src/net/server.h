@@ -20,17 +20,33 @@ public:
   /**
    *
    */
-  void listen(int port);
+  bool listen(int port);
 
   /**
    *
    */
-  void listen(int port, const char* host);
+  bool listen(int port, std::function<void(void*)> cb);
 
   /**
    *
    */
-  void listen(int port, const char* host, int backlog);
+  bool listen(int port, const char* host);
+
+  /**
+   *
+   */
+  bool listen(int port, const char* host, std::function<void(void*)> cb);
+
+  /**
+   *
+   */
+  bool listen(int port, const char* host, int backlog);
+
+  /**
+   *
+   */
+  bool listen(int port, const char* host, int backlog,
+              std::function<void(void*)> cb);
 
   /**
    *
@@ -40,12 +56,7 @@ public:
   /**
    *
    */
-  void close(std::function cb);
-
-  /**
-   *
-   */
-  std::map<std::string, std::string> address();
+  void close(std::function<void(void)> cb);
 
   /**
    *
@@ -61,6 +72,18 @@ public:
    *
    */
   int getConcurrentConnections();
+
+private:
+
+  /**
+   *
+   */
+  uv_tcp_t _handle;
+
+  /**
+   *
+   */
+  void _onConnection(uv_stream_t* handle, int status)
 };
 }
 }
