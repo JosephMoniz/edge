@@ -4,11 +4,11 @@ Evented I/O for C++11. This is a heavy work in progress at the moment.
 
 Working Examples
 ================
-Client TCP sockets:
+Client TCP sockets (stdin -> socket -> stdout):
 ```c++
 int main(int argc, char **argv) {
   auto loop   = node::Loop::getDefault();
-  auto socket = std::make_shared<node::net::Socket>();
+  auto socket = node::net::Socket();
 
   socket->connect(8080, [&](){
     node::process::stdin.pipe(socket).pipe(node::process::stdout);
