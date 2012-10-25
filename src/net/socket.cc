@@ -146,3 +146,9 @@ void node::net::Socket::_closeCb(uv_handle_t* req) {
   node::net::Socket* self = (node::net::Socket*) req->data;
   self->emit("end", nullptr);
 }
+
+bool node::net::Socket::_accept(uv_stream_t* handle) {
+  int res;
+  res = uv_accept(handle, (uv_stream_t*)&this->_handle);
+  return !res;
+}

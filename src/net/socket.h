@@ -6,6 +6,7 @@
 #include "uv.h"
 
 #include "eventemitter.h"
+#include "server.h"
 
 namespace node {
 namespace net {
@@ -24,6 +25,9 @@ typedef struct SocketConnectorData_s {
 } SocketConnectorData_t;
 
 class Socket : public EventEmitter {
+
+  friend node::net::Server;
+
 public:
 
   /**
@@ -299,6 +303,15 @@ private:
    * @returns {void}
    */
   static void _closeCb(uv_handle_t* req);
+
+  /**
+   * This function takes a listening socket as an argument and accepts
+   * a connection from it.
+   *
+   * @param {uv_stream_t*} - The listening socket to accept from
+   * @returns {bool}       - True on success false on failure
+   */
+  bool _accept(uv_stream_t* handle);
 };
 }
 }
