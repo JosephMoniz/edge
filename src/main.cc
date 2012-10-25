@@ -15,15 +15,15 @@
 #include "eventemitter.h"
 #include "querystring.h"
 #include "net/socket.h"
+#include "process/stdin.h"
 #include "process/stdout.h"
 
 int main(int argc, char **argv) {
   auto loop   = node::Loop::getDefault();
-  auto socket = std::make_shared<node::net::Socket>();
+  auto socket = node::net::Socket();
 
-  socket->connect(8080, [&](){
-    socket->write("yo dog, i heard you like evented I/O\n");
-    socket->pipe(node::process::stdout);
+  socket.connect(8080, [&](){
+    node::process::stdin.pipe(socket).pipe(node::process::stdout);
   });
 
   loop->run();
