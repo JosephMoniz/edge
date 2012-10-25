@@ -11,11 +11,11 @@ int main(int argc, char **argv) {
   auto loop   = node::Loop::getDefault();
   auto server = node::net::Server();
 
-  server.on("connection", [&](void* data) {
+  auto server = node::net::Server::create([&](void* data) {
     auto socket = static_cast<node::net::Socket*>(data);
     socket->pipe(socket);
   });
-  server.listen(8000);
+  server->listen(8000);
 
   loop->run();
   return 0;
