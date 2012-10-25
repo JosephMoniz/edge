@@ -7,6 +7,12 @@ node::net::Server::Server() {
   this->_handle.data = this;
 }
 
+node::net::Server* node::net::Server::create(std::function<void(void*)> cb) {
+  auto server = new node::net::Server();
+  server->on("connection", cb);
+  return server;
+}
+
 bool node::net::Server::listen(int port) {
   return this->listen(port, "0.0.0.0", 512, nullptr);
 }

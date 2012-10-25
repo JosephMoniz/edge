@@ -20,6 +20,11 @@ public:
   /**
    *
    */
+  static node::net::Server* create(std::function<void(void*)> cb);
+
+  /**
+   *
+   */
   bool listen(int port);
 
   /**
