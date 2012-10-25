@@ -15,21 +15,31 @@
 #include "eventemitter.h"
 #include "querystring.h"
 #include "net/socket.h"
+#include "net/server.h"
 #include "process/stdin.h"
 #include "process/stdout.h"
 
 int main(int argc, char **argv) {
   auto loop   = node::Loop::getDefault();
+  auto server = node::net::Server();
+
+  server.on("connection", [&](void* data) {
+    node::net::Socket* socket = (node::net::Socket*) data;
+    socket->pipe(socket);
+  });
+  server.listen(8000);
+
   auto socket = node::net::Socket();
 
-  socket.connect(8080, [&](){
+  socket.connect(8000, [&](){
     node::process::stdin.pipe(socket).pipe(node::process::stdout);
   });
 
   loop->run();
 
-  /////// Testing out timers
   /**
+
+  /////// Testing out timers
   auto loop = node::Loop::getDefault();
 
   node::Timer timer;
@@ -40,10 +50,8 @@ int main(int argc, char **argv) {
   loop->run();
 
   return 0;
-  */
 
   /////// Tests that don't depend on the event loop
-  /**
   std::cout << "== Testing extname" << std::endl;
   std::cout << "lolwat.jpg: " << node::Path::extname("lolwat.jpg") << std::endl;
   std::cout << "/a/wat.jpg: " << node::Path::extname("/a/wat.jpg") << std::endl;
