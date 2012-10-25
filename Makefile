@@ -32,6 +32,7 @@ OBJ = $(BUILDDIR)/path.o           \
       $(BUILDDIR)/loop.o           \
       $(BUILDDIR)/timers.o         \
       $(BUILDDIR)/net/socket.o     \
+      $(BUILDDIR)/net/server.o     \
       $(BUILDDIR)/process/stdin.o  \
       $(BUILDDIR)/process/stdout.o \
       $(BUILDDIR)/main.o
