@@ -83,7 +83,7 @@ private:
   /**
    *
    */
-  void _onConnection(uv_stream_t* handle, int status)
+  void _onConnection(uv_stream_t* handle, int status);
 };
 }
 }

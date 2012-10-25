@@ -84,6 +84,11 @@ void node::net::Server::_onConnection(uv_stream_t* handle, int status) {
   }
 
   auto socket = new node::net::Socket();
-  // TODO: accept on socket
-  // res = uv_accept(handle, (uv_stream_t*)socket->_handle);
+  auto result = socket->_accept(handle);
+  if (!result) {
+    self->emit("error", nullptr);
+    return;
+  }
+
+  self->emit("connection", (void*)socket);
 }
