@@ -9,7 +9,6 @@ TCP echo server:
 ```c++
 int main(int argc, char **argv) {
   auto loop   = node::Loop::getDefault();
-  auto server = node::net::Server();
 
   auto server = node::net::Server::create([&](void* data) {
     auto socket = static_cast<node::net::Socket*>(data);
