@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string.h>
 
 #include "loop.h"
@@ -108,13 +109,7 @@ void node::net::Socket::_connectCb(uv_connect_t* req, int status) {
   if (data->f != nullptr) {
     data->f();
   }
-
-  uv_stream_t* stream = (uv_stream_t*)&data->self->_handle;
-  uv_read_start(
-    stream,
-    node::net::Socket::_allocCb,
-    node::net::Socket::_readCb
-  );
+  data->self->_startRead();
 }
 
 void node::net::Socket::_writeCb(uv_write_t* req, int status) {
@@ -151,4 +146,13 @@ bool node::net::Socket::_accept(uv_stream_t* handle) {
   int res;
   res = uv_accept(handle, (uv_stream_t*)&this->_handle);
   return !res;
+}
+
+void node::net::Socket::_startRead() {
+  uv_stream_t* stream = (uv_stream_t*) &this->_handle;
+  uv_read_start(
+    stream,
+    node::net::Socket::_allocCb,
+    node::net::Socket::_readCb
+  );
 }

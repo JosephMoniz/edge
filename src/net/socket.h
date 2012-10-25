@@ -312,6 +312,15 @@ private:
    * @returns {bool}       - True on success false on failure
    */
   bool _accept(uv_stream_t* handle);
+
+  /**
+   * This function is responsible for setting up all the read related
+   * callbacks and will start firing 'data' events as data is received
+   * by the underlying TCP sockets
+   *
+   * @returns {void}
+   */
+  void _startRead();
 };
 }
 }

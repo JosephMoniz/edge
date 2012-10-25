@@ -8,24 +8,24 @@ node::net::Server::Server() {
 }
 
 bool node::net::Server::listen(int port) {
-  this->listen(port, "0.0.0.0", 512, nullptr);
+  return this->listen(port, "0.0.0.0", 512, nullptr);
 }
 
 bool node::net::Server::listen(int port, std::function<void(void*)> cb) {
-  this->listen(port, "0.0.0.0", 512, cb);
+  return this->listen(port, "0.0.0.0", 512, cb);
 }
 
 bool node::net::Server::listen(int port, const char* host) {
-  this->listen(port, host, 512, nullptr);
+  return this->listen(port, host, 512, nullptr);
 }
 
 bool node::net::Server::listen(int port, const char* host,
                                std::function<void(void*)> cb) {
-  this->listen(port, host, 512, cb);
+  return this->listen(port, host, 512, cb);
 }
 
 bool node::net::Server::listen(int port, const char* host, int backlog) {
-  this->listen(port, host, 512, nullptr)
+  return this->listen(port, host, 512, nullptr);
 }
 
 bool node::net::Server::listen(int port, const char* host, int backlog,
@@ -76,7 +76,6 @@ int node::net::Server::getConcurrentConnections() {
 
 void node::net::Server::_onConnection(uv_stream_t* handle, int status) {
   node::net::Server* self = (node::net::Server*)handle->data;
-  int res;
 
   if (status != 0) {
     self->emit("error", nullptr);
@@ -90,5 +89,6 @@ void node::net::Server::_onConnection(uv_stream_t* handle, int status) {
     return;
   }
 
+  socket->_startRead();
   self->emit("connection", (void*)socket);
 }

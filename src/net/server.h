@@ -10,7 +10,7 @@
 
 namespace node {
 namespace net {
-class Server {
+class Server : public EventEmitter {
 public:
   /**
    *
@@ -83,7 +83,7 @@ private:
   /**
    *
    */
-  void _onConnection(uv_stream_t* handle, int status);
+  static void _onConnection(uv_stream_t* handle, int status);
 };
 }
 }
