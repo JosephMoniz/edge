@@ -21,15 +21,9 @@ int main(int argc, char **argv) {
   auto loop   = node::Loop::getDefault();
   auto socket = std::make_shared<node::net::Socket>();
 
-  socket->connect(8080, "127.0.0.1", [&](){
+  socket->connect(8080, [&](){
     socket->write("yo dog, i heard you like evented I/O\n");
-    socket->on("data", [&](void *data) {
-      uv_buf_t* buf = (uv_buf_t*)data;
-      node::process::stdout.write(buf->base, buf->len);
-    });
-    socket->on("end", [&](void *data) {
-      node::process::stdout.write("remote connection closed\n");
-    });
+    socket->pipe(node::process::stdout);
   });
 
   loop->run();
