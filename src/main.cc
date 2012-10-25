@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
   auto server = node::net::Server();
 
   server.on("connection", [&](void* data) {
-    node::net::Socket* socket = (node::net::Socket*) data;
+    auto socket = static_cast<node::net::Socket*>(data);
     socket->pipe(socket);
   });
   server.listen(8000);
