@@ -45,7 +45,6 @@ int node::net::Socket::getBufferSize() {
 void node::net::Socket::write(void* data, size_t len) {
   auto container = new node::net::SocketWriterData_t;
   uv_buf_t buf = { .base = (char*)data, .len = len };
-  container->f = f;
   uv_write(
     &container->writer,
     (uv_stream_t*)&this->_handle,
@@ -56,7 +55,7 @@ void node::net::Socket::write(void* data, size_t len) {
 }
 
 void node::net::Socket::write(uv_buf_t* buf) {
-  this->write(buf.base, buf.len);
+  this->write(buf->base, buf->len);
 }
 
 void node::net::Socket::write(const char* data) {
@@ -72,10 +71,8 @@ void node::net::Socket::end() {
 }
 
 void node::net::Socket::end(void* data, size_t len) {
-  auto self = this;
-  this->write(data, len, [&self]() {
-    self->end();
-  });
+  this->write(data, len);
+  this->end();
 }
 
 void node::net::Socket::end(const char* data) {
@@ -84,16 +81,6 @@ void node::net::Socket::end(const char* data) {
 
 void node::net::Socket::end(std::string data) {
   this->end((void*)data.c_str(), data.length());
-}
-
-template <class WritableStream>
-void node::net::Socket::pipe(WritableStream *dest) {
-  this->on("data", [&dest](void *data) {
-    dest->write((uv_buf_t*) data);
-  });
-  this->on("end"[&dest](void *data) {
-    dest->end();
-  });
 }
 
 void node::net::Socket::setTimeout(int timeout) {
@@ -131,10 +118,6 @@ void node::net::Socket::_connectCb(uv_connect_t* req, int status) {
 }
 
 void node::net::Socket::_writeCb(uv_write_t* req, int status) {
-  SocketWriterData_t* data = (SocketWriterData_t*) req;
-  if (data->f != nullptr) {
-    data->f();
-  }
   delete req;
 }
 

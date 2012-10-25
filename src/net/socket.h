@@ -159,15 +159,37 @@ public:
   void end(std::string data);
 
   /**
-   * This function takes a writable stream and pipes all the data
-   * receiveved by the underlying TCP socket directly to the passed
-   * in writable stream
+   * This function takes a pointer to a writable stream and pipes all the data
+   * receiveved by the underlying TCP socket directly to the passed in writable
+   * stream
    *
    * @param {WritableStream*} dest - The writable stream to pipe to
-   * @returns {void}
+   * @returns {WritableStream*}    - The destination stream passed in
    */
   template <class WritableStream>
-  void pipe(WritableStream* dest);
+  WritableStream* pipe(WritableStream* dest) {
+    this->on("data", [dest](void *data) {
+      dest->write((uv_buf_t*) data);
+    });
+    this->on("end", [dest](void *data) {
+      dest->end();
+    });
+    return dest;
+  };
+
+  /**
+   * This function takes a reference to a writable stream and pipes all the
+   * data received by the underlying TCP socket directly to the passed in
+   * writable stream.
+   *
+   * @param {WritableStream&} dest - The writable stream to pipe to
+   * @returns {WritableStream&}    - The destination stream passed in
+   */
+  template <class WritableStream>
+  WritableStream& pipe(WritableStream& dest) {
+    this->pipe(&dest);
+    return dest;
+  };
 
 
   /**
