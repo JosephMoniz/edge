@@ -26,14 +26,12 @@ TCP echo client (stdin -> socket -> stdout):
 int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
-  node::Timer timer;
-  timer.start([]() {
-    std::cout << "ping" << std::endl;
-  }, 1000, 1000);
+  auto socket = node::net::Socket();
+  socket.connect(8000, [&]() {
+    node::process::stdin.pipe(socket).pipe(node::process::stdout);
+  });
 
   loop->run();
-
-  return 0;
 }
 ```
 
@@ -43,11 +41,12 @@ int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
   node::Timer timer;
-  timer.start([](node::Timer* self, int status) {
+  timer.start([]() {
     std::cout << "ping" << std::endl;
   }, 1000, 1000);
 
   loop->run();
+
   return 0;
 }
 ```
