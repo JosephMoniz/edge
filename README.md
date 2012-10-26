@@ -24,14 +24,15 @@ int main(int argc, char **argv) {
 TCP echo client (stdin -> socket -> stdout):
 ```c++
 int main(int argc, char **argv) {
-  auto loop   = node::Loop::getDefault();
-  auto socket = node::net::Socket();
+  auto loop = node::Loop::getDefault();
 
-  socket->connect(8000, [&](){
-    node::process::stdin.pipe(socket).pipe(node::process::stdout);
-  });
+  node::Timer timer;
+  timer.start([]() {
+    std::cout << "ping" << std::endl;
+  }, 1000, 1000);
 
   loop->run();
+
   return 0;
 }
 ```
