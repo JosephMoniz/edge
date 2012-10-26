@@ -25,7 +25,7 @@ public:
    * the map are unique and values are always pushed onto the
    * value vector as std::strings.
    *
-   * EXAMPLES
+   * EXAMPLES:
    *  auto map = node::QueryString::parse("key=value&test=val1&test=val2");
    *
    * @param {std::string} query      - The query string to parse
