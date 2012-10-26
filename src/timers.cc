@@ -29,14 +29,6 @@ int64_t node::Timer::getRepeat() {
   return uv_timer_get_repeat(&this->_timer);
 }
 
-void node::Timer::setData(void* data) {
-  this->_data = data;
-}
-
-void* node::Timer::getData() {
-  return this->_data;
-}
-
 void node::Timer::_wrapper(uv_timer_t* handle, int status) {
   node::Timer* timer = static_cast<node::Timer*>(handle->data);
   timer->_cb(timer, status);
