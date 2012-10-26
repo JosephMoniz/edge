@@ -46,6 +46,12 @@ public:
    * This establishes a client connection to the specified port
    * on the same machine
    *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  socket.connect(8080);
+   *  loop->run();
+   *
    * @param {int} port - The port to connect to
    * @returns {void}
    */
@@ -55,6 +61,14 @@ public:
    * This establishes a client connection to the specified port
    * on the same machine and when a connection is established
    * the callback is executed
+   *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  socket.connect(8080, [&]() {
+   *    node::process::stdin.pipe(socket).pipe(node::process::stdout);
+   *  });
+   *  loop->run();
    *
    * @param {int} port      - The port to connect to
    * @param {std::function} - The callback to run on connection
@@ -66,7 +80,14 @@ public:
    * This establishes a connection to the specified port on the
    * specified host
    *
-
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  socket.connect(8080, "192.168.1.12");
+   *  loop->run();
+   *
+   * @param {int} port         - The port to connect to
+   * @param {const char*} host - The host to connect to
    */
   void connect(int port, const char* host);
 
@@ -74,6 +95,14 @@ public:
    * This establishes a connection to the specified port on the
    * specified host and when a connection is established the
    * callback is executed
+   *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  socket.connect(8080, "192.168.1.12", [&]() {
+   *    node::process::stdin.pipe(socket).pipe(node::process::stdout);
+   *  });
+   *  loop->run();
    *
    * @param {int} port      - The port to connect to
    * @param {const char*}   - The host to connect to
@@ -91,6 +120,15 @@ public:
    * This function writes `len` bytes worth of data starting at
    * `data` to the underlying TCP stream
    *
+   * EXAMPLE:
+   *  auto loop    = node::Loop::getDefault();
+   *  auto socket  = node::net::Socket();
+   *  char* buffer = "hi";
+   *  socket.connect(8080, [&]() {
+   *    socket.write((void*)buffer, 2);
+   *  });
+   *  loop->run();
+   *
    * @param {void*} data - The start of the data to write
    * @param {size_t} len - The ammount of data to write
    * @returns {void}
@@ -99,6 +137,15 @@ public:
 
   /**
    * This function writes a uv_buf_t to the underlying TCP stream
+   *
+   * EXAMPLE:
+   *  auto loop    = node::Loop::getDefault();
+   *  auto socket  = node::net::Socket();
+   *  uv_buf_t buf = { .base = "hi", .len = 2 };
+   *  socket.connect(8080, [&]() {
+   *    socket.write(&buf);
+   *  });
+   *  loop->run();
    *
    * @param {uv_buf_t*} buf - The uv_buf_t to write
    * @returns {void}
@@ -109,6 +156,15 @@ public:
    * This function writes a zero terminated string and writes
    * it to the underlying TCP stream.
    *
+   * EXAMPLE:
+   *  auto loop       = node::Loop::getDefault();
+   *  auto socket     = node::net::Socket();
+   *  const char* buf = "hi";
+   *  socket.connect(8080, [&]() {
+   *    socket.write(buf);
+   *  });
+   *  loop->run();
+   *
    * @param {const char*} data - The zero terminated string to write
    * @returns {void}
    */
@@ -117,6 +173,15 @@ public:
   /**
    * This function takes a std::string and writes it to the
    * underlying TCP stream.
+   *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  auto str    = std::string("hi");
+   *  socket.connect(8080, [&]() {
+   *    socket.write(str);
+   *  });
+   *  loop->run();
    *
    * @param {std::string} data - The std::string to write
    * @returns {void}
@@ -127,6 +192,14 @@ public:
    * This function closes the underlying TCP stream and emits
    * an 'end' event on completion
    *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  socket.connect(8080, [&]() {
+   *    socket.end();
+   *  });
+   *  loop->run();
+   *
    * @returns {void}
    */
   void end();
@@ -135,6 +208,15 @@ public:
    * This function writes `len` amount of bytes starting at `data`
    * to the underlying TCP stream then when the write is completed
    * it closes the TCP stream and emits an 'end' event on completion
+   *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  char* buf   = "hi";
+   *  socket.connect(8080, [&]() {
+   *    socket.end((void*) hi, 2);
+   *  });
+   *  loop->run();
    *
    * @param {void*} data - The start of the data to write
    * @param {size_t} len - The amount of bytes to write
@@ -147,6 +229,15 @@ public:
    * underlying TCP stream then when the write is completed it closes
    * the TCP stream and emits an 'end' event on completion
    *
+   * EXAMPLE:
+   *  auto loop       = node::Loop::getDefault();
+   *  auto socket     = node::net::Socket();
+   *  const char* buf = "hi";
+   *  socket.connect(8080, [&]() {
+   *    socket.end(buf);
+   *  });
+   *  loop->run();
+   *
    * @param {const char*} data - The zero terminated string to write
    * @returns {void}
    */
@@ -157,6 +248,15 @@ public:
    * TCP stream then when the write is completed it cloces the TCP
    * stream and emits an 'end' event on completion
    *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  auto str    = std::string("hi");
+   *  socket.connect(8080, [&]() {
+   *    socket.end(str);
+   *  });
+   *  loop->run();
+   *
    * @param {std::string} data - The std::string to write
    * @returns {void}
    */
@@ -166,6 +266,14 @@ public:
    * This function takes a pointer to a writable stream and pipes all the data
    * receiveved by the underlying TCP socket directly to the passed in writable
    * stream
+   *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  socket.connect(8080, [&]() {
+   *    socket.pipe(&node::process::stdout);
+   *  });
+   *  loop->run();
    *
    * @param {WritableStream*} dest - The writable stream to pipe to
    * @returns {WritableStream*}    - The destination stream passed in
@@ -185,6 +293,14 @@ public:
    * This function takes a reference to a writable stream and pipes all the
    * data received by the underlying TCP socket directly to the passed in
    * writable stream.
+   *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  socket.connect(8080, [&]() {
+   *    socket.pipe(node::process::stdout);
+   *  });
+   *  loop->run();
    *
    * @param {WritableStream&} dest - The writable stream to pipe to
    * @returns {WritableStream&}    - The destination stream passed in
@@ -209,6 +325,15 @@ public:
   /**
    * This function toggles the TCP_NODELAY flag on the underyling TCP
    * stream. Boolean true enables is and boolean false disables it.
+   *
+   * EXAMPLE:
+   *  auto loop   = node::Loop::getDefault();
+   *  auto socket = node::net::Socket();
+   *  socket.connect(8080, [&]() {
+   *    socket.pipe(node::process::stdout);
+   *  });
+   *  socket.setNoDelay(true);
+   *  loop->run();
    *
    * @param {bool} enabled - enable if true disable if false
    * @returns {void}
@@ -240,16 +365,6 @@ private:
    * translated address of what were connected to
    */
   struct sockaddr_in _addr;
-
-  /**
-   * true if server false if client
-   */
-  bool _isServer;
-
-  /**
-   * true if connected false otherwise
-   */
-  bool _isConnected;
 
   /**
    * This is the internal callback that gets ran when a connection

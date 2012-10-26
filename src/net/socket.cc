@@ -131,7 +131,7 @@ void node::net::Socket::_readCb(uv_stream_t* stream, ssize_t nread,
     if (error.code == UV_EOF) {
       uv_close((uv_handle_t*)stream, node::net::Socket::_closeCb);
     } else {
-      // TODO: emit error
+      self->emit("error", nullptr);
     }
   }
   delete buf.base;
