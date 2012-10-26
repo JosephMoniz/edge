@@ -14,22 +14,21 @@
 #include "path.h"
 #include "eventemitter.h"
 #include "querystring.h"
-#include "net/socket.h"
-#include "net/server.h"
+#include "net.h"
 #include "process/stdin.h"
 #include "process/stdout.h"
 
 int main(int argc, char **argv) {
   auto loop   = node::Loop::getDefault();
 
-  auto server = node::net::Server::create([&](void* data) {
+  auto server = node::net::createServer([&](void* data) {
     auto socket = static_cast<node::net::Socket*>(data);
     socket->pipe(socket);
   });
   server->listen(8000);
 
   auto socket = node::net::Socket();
-  socket.connect(8000, [&](){
+  socket.connect(8000, [&]() {
     node::process::stdin.pipe(socket).pipe(node::process::stdout);
   });
 

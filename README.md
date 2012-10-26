@@ -8,9 +8,9 @@ Working Examples
 TCP echo server:
 ```c++
 int main(int argc, char **argv) {
-  auto loop   = node::Loop::getDefault();
+  auto loop = node::Loop::getDefault();
 
-  auto server = node::net::Server::create([&](void* data) {
+  auto server = node::net::createServer([&](void* data) {
     auto socket = static_cast<node::net::Socket*>(data);
     socket->pipe(socket);
   });
