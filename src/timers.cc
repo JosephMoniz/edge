@@ -7,17 +7,17 @@ node::Timer::Timer() {
   this->_timer.data = this;
 }
 
-int node::Timer::start(std::function<void(node::Timer*, int)> cb,
+void node::Timer::start(std::function<void()> cb,
                        int64_t timeout, int64_t repeat) {
   this->_cb = cb;
   return uv_timer_start(&this->_timer, node::Timer::_wrapper, timeout, repeat);
 }
 
-int node::Timer::stop() {
+void node::Timer::stop() {
   return uv_timer_stop(&this->_timer);
 }
 
-int node::Timer::again() {
+void node::Timer::again() {
   return uv_timer_again(&this->_timer);
 }
 
@@ -31,5 +31,5 @@ int64_t node::Timer::getRepeat() {
 
 void node::Timer::_wrapper(uv_timer_t* handle, int status) {
   node::Timer* timer = static_cast<node::Timer*>(handle->data);
-  timer->_cb(timer, status);
+  timer->_cb();
 }
