@@ -19,7 +19,7 @@
 #include "process/stdout.h"
 
 int main(int argc, char **argv) {
-  auto loop   = node::Loop::getDefault();
+  auto loop = node::Loop::getDefault();
 
   auto server = node::net::createServer([&](void* data) {
     auto socket = static_cast<node::net::Socket*>(data);
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
   node::Timer timer;
-  timer.start([](node::Timer* self, int status) {
+  timer.start([]() {
     std::cout << "ping" << std::endl;
   }, 1000, 1000);
 
