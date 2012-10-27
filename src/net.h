@@ -16,7 +16,7 @@ namespace net {
    * @param {std::function} cb     - The callback to run received connections
    * @returns {node::net::Server*} - The pointer to the heap allocated server
    */
-  node::net::Server* createServer(std::function<void(void*)> cb);
+  node::net::Server* createServer(node::net::ServerConnectionCb cb);
 
 }
 }

@@ -7,9 +7,15 @@
 #include "uv.h"
 
 #include "eventemitter.h"
+#include "socket.h"
 
 namespace node {
 namespace net {
+
+class Socket;
+
+typedef std::function<void(node::net::Socket*)> ServerConnectionCb;
+
 class Server : public EventEmitter {
 public:
   /**
@@ -17,6 +23,12 @@ public:
    * up the internal state for the listening socket.
    */
   Server();
+
+  /**
+   * This is a fairly basic constructor, it is responsible for setting
+   * up the internal state for the listening socket.
+   */
+  Server(ServerConnectionCb cb);
 
   /**
    * This funciton starts the underlying socket listening on the supplied
@@ -166,6 +178,11 @@ private:
    * This is a reference to the listening socket
    */
   uv_tcp_t _handle;
+
+  /**
+   * This callback will be ran everytime a new connection is accepted
+   */
+  ServerConnectionCb _cb;
 
   /**
    * This is the callback that gets called everytime a connection

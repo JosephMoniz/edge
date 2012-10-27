@@ -5,6 +5,13 @@
 node::net::Server::Server() {
   uv_tcp_init(node::Loop::getDefault()->getUVLoop(), &this->_handle);
   this->_handle.data = this;
+  this->_cb = nullptr;
+}
+
+node::net::Server::Server(ServerConnectionCb cb) {
+  uv_tcp_init(node::Loop::getDefault()->getUVLoop(), &this->_handle);
+  this->_handle.data = this;
+  this->_cb = cb;
 }
 
 bool node::net::Server::listen(int port) {
@@ -77,7 +84,7 @@ int node::net::Server::getConcurrentConnections() {
 }
 
 void node::net::Server::_onConnection(uv_stream_t* handle, int status) {
-  node::net::Server* self = (node::net::Server*)handle->data;
+  auto self = static_cast<node::net::Server*>(handle->data);
 
   if (status != 0) {
     self->emit("error", nullptr);
@@ -92,5 +99,8 @@ void node::net::Server::_onConnection(uv_stream_t* handle, int status) {
   }
 
   socket->_startRead();
+  if (self->_cb != nullptr) {
+    self->_cb(socket);
+  }
   self->emit("connection", (void*)socket);
 }
