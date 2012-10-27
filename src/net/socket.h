@@ -12,6 +12,7 @@ namespace node {
 namespace net {
 
 class Socket;
+class Server;
 
 typedef struct SocketWriterData_s {
   uv_write_t writer;
@@ -26,7 +27,7 @@ typedef struct SocketConnectorData_s {
 
 class Socket : public EventEmitter {
 
-  friend node::net::Server;
+friend node::net::Server;
 
 public:
 

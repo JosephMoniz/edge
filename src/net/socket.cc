@@ -105,7 +105,8 @@ void node::net::Socket::setKeepAlive(bool enabled, int initialDelay) {
 }
 
 void node::net::Socket::_connectCb(uv_connect_t* req, int status) {
-  SocketConnectorData_t* data = (SocketConnectorData_t*) req;
+  auto data = (SocketConnectorData_t*) req;
+
   if (data->f != nullptr) {
     data->f();
   }
@@ -123,9 +124,10 @@ uv_buf_t node::net::Socket::_allocCb(uv_handle_t* handle,
 
 void node::net::Socket::_readCb(uv_stream_t* stream, ssize_t nread,
                                 uv_buf_t buf) {
-  node::net::Socket* self = (node::net::Socket*) stream->data;
+  auto self = static_cast<node::net::Socket*>(stream->data);
+
   if (nread > 0) {
-    self->emit("data", (void*)&buf);
+    self->emit("data", static_cast<void*>(&buf));
   } else {
     uv_err_t error = uv_last_error(node::Loop::getDefault()->getUVLoop());
     if (error.code == UV_EOF) {
@@ -138,18 +140,18 @@ void node::net::Socket::_readCb(uv_stream_t* stream, ssize_t nread,
 }
 
 void node::net::Socket::_closeCb(uv_handle_t* req) {
-  node::net::Socket* self = (node::net::Socket*) req->data;
+  auto self = static_cast<node::net::Socket*>(req->data);
   self->emit("end", nullptr);
 }
 
 bool node::net::Socket::_accept(uv_stream_t* handle) {
   int res;
-  res = uv_accept(handle, (uv_stream_t*)&this->_handle);
+  res = uv_accept(handle, (uv_stream_t*) &this->_handle);
   return !res;
 }
 
 void node::net::Socket::_startRead() {
-  uv_stream_t* stream = (uv_stream_t*) &this->_handle;
+  auto stream = (uv_stream_t*) &this->_handle;
   uv_read_start(
     stream,
     node::net::Socket::_allocCb,
