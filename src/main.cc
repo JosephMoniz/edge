@@ -21,8 +21,7 @@
 int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
-  auto server = node::net::createServer([&](void* data) {
-    auto socket = static_cast<node::net::Socket*>(data);
+  auto server = node::net::createServer([](node::net::Socket* socket) {
     socket->pipe(socket);
   });
   server->listen(8000);

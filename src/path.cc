@@ -105,7 +105,7 @@ std::string node::Path::dirname(std::string path) {
       return std::string(".");
     }
   } else {
-	return std::string(path.begin(), it - 1);
+    return std::string(path.begin(), it - 1);
   }
 }
 
