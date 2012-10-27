@@ -10,8 +10,7 @@ TCP echo server:
 int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
-  auto server = node::net::createServer([&](void* data) {
-    auto socket = static_cast<node::net::Socket*>(data);
+  auto server = node::net::createServer([](node::net::Socket* socket) {
     socket->pipe(socket);
   });
   server->listen(8000);
@@ -21,12 +20,12 @@ int main(int argc, char **argv) {
 }
 ```
 
-TCP echo client (stdin -> socket -> stdout):
+TCP telnet clone (stdin -> socket -> stdout):
 ```c++
 int main(int argc, char **argv) {
-  auto loop = node::Loop::getDefault();
-
+  auto loop   = node::Loop::getDefault();
   auto socket = node::net::Socket();
+
   socket.connect(8000, [&]() {
     node::process::stdin.pipe(socket).pipe(node::process::stdout);
   });
@@ -38,9 +37,9 @@ int main(int argc, char **argv) {
 Timers:
 ```c++
 int main(int argc, char **argv) {
-  auto loop = node::Loop::getDefault();
+  auto loop  = node::Loop::getDefault();
+  auto timer = node::Timer();
 
-  node::Timer timer;
   timer.start([]() {
     std::cout << "ping" << std::endl;
   }, 1000, 1000);
