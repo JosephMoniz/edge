@@ -10,15 +10,15 @@ node::Timer::Timer() {
 void node::Timer::start(std::function<void()> cb,
                        int64_t timeout, int64_t repeat) {
   this->_cb = cb;
-  return uv_timer_start(&this->_timer, node::Timer::_wrapper, timeout, repeat);
+  uv_timer_start(&this->_timer, node::Timer::_wrapper, timeout, repeat);
 }
 
 void node::Timer::stop() {
-  return uv_timer_stop(&this->_timer);
+  uv_timer_stop(&this->_timer);
 }
 
 void node::Timer::again() {
-  return uv_timer_again(&this->_timer);
+  uv_timer_again(&this->_timer);
 }
 
 void node::Timer::setRepeat(int64_t repeat) {
