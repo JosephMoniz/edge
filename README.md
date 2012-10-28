@@ -11,6 +11,7 @@ int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
   auto web = node::http::Server([](node::http::ClientStream* stream) {
+    stream->setHeader("Content-Type", "text/plain");
     stream->end("Hello world!");
   });
   web.listen(80);
