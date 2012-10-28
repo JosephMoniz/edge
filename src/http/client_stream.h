@@ -6,18 +6,27 @@
 #include <map>
 
 #include "uv.h"
+#include "http_parser.h"
 
 #include "eventemitter.h"
+#include "server.h"
 #include "net.h"
 
 namespace node {
 namespace http {
+
+class Server;
+
 class ClientStream : public EventEmitter {
+
+friend node::http::Server;
+
 public:
   /**
    *
    */
   std::string method;
+
 
   /**
    *
@@ -77,7 +86,7 @@ public:
   /**
    *
    */
-  void getHeader(const char* name);
+  const char* getHeader(const char* name);
 
   /**
    *
@@ -127,6 +136,11 @@ public:
   /**
    *
    */
+  void end(uv_buf_t* buf);
+
+  /**
+   *
+   */
   void end(const char* data);
 
   /**
@@ -157,6 +171,41 @@ public:
     return dest;
   };
 
+  /**
+   *
+   */
+  static int _onMessageBegin(http_parser* parser);
+
+  /**
+   *
+   */
+  static int _onUrl(http_parser* parser, const char* at, size_t length);
+
+  /**
+   *
+   */
+  static int _onHeaderField(http_parser* parser, const char* at, size_t length);
+
+  /**
+   *
+   */
+  static int _onHeaderValue(http_parser* parser, const char* at, size_t length);
+
+  /**
+   *
+   */
+  static int _onHeadersComplete(http_parser* parser);
+
+  /**
+   *
+   */
+  static int _onBody(http_parser* parser, const char* at, size_t length);
+
+  /**
+   *
+   */
+  static int _onMessageComplete(http_parser* parser);
+
 private:
   /**
    *
@@ -167,7 +216,31 @@ private:
    *
    */
   node::net::Socket* _socket;
+
+  /**
+   *
+   */
+  std::string _fieldTmp;
+
+  /**
+   *
+   */
+  std::string _tmp;
+
+  /**
+   *
+   */
+  bool _hasHeaderValue;
+
+  /**
+   *
+   */
+  http_parser _parser;
+
 };
+
+extern http_parser_settings _settings;
+
 }
 }
 

@@ -2,18 +2,19 @@
 #include "client_stream.h"
 
 node::http::Server::Server() {
-  auto self = this;
-  this->_server.on("connection", [&self](void* data) {
-    node::http::Server::_onConnection(self, data);
+  this->_cb = nullptr;
+  this->_server.on("connection", [=](void* data) {
+    node::http::Server::_onSocketConnection(this, data);
   });
+  this->on("connection", node::http::Server::_onConnection);
 }
 
-node::http::Server::Server(std::function<void(void*)> cb) {
-  auto self = this;
-  this->on("connection", cb);
-  this->_server.on("connection", [&self](void* data) {
-    node::http::Server::_onConnection(self, data);
+node::http::Server::Server(std::function<void(node::http::ClientStream*)> cb) {
+  this->_cb = cb;
+  this->_server.on("connection", [=](void* data) {
+    node::http::Server::_onSocketConnection(this, data);
   });
+  this->on("connection", node::http::Server::_onConnection);
 }
 
 bool node::http::Server::listen(int port) {
@@ -46,15 +47,22 @@ void node::http::Server::close() {
   this->_server.close();
 }
 
-void node::http::Server::close(std::function<void(void*)> cb) {
+void node::http::Server::close(std::function<void()> cb) {
   this->_server.close(cb);
 }
 
 
-void node::http::Server::_onConnection(node::http::Server* self, void *data) {
+void node::http::Server::_onSocketConnection(node::http::Server* self,
+                                             void *data) {
   auto socket = static_cast<node::net::Socket*>(data);
-  auto stream = new node::http::ClientStream(self, socket);
-  // DO NOT EMIT CONNECTION UNTIL ALL HEADERS ARE READ AND WERE
-  // MOVING ONTO BODY CONTENTS
-  //self->emit("connection");
+  new node::http::ClientStream(self, socket);
+}
+
+void node::http::Server::_onConnection(void *data) {
+  auto stream = (node::http::ClientStream*) data;
+  auto self   = (node::http::Server*) stream->_server;
+
+  if (self->_cb != nullptr) {
+    self->_cb(stream);
+  }
 }

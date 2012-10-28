@@ -26,16 +26,18 @@ INCLUDES = -I$(UVDIR)/include   \
            -I$(YAJLDIR)/src/api \
            -I$(SRCDIR)
 
-OBJ = $(BUILDDIR)/path.o           \
-      $(BUILDDIR)/eventemitter.o   \
-      $(BUILDDIR)/querystring.o    \
-      $(BUILDDIR)/loop.o           \
-      $(BUILDDIR)/timers.o         \
-      $(BUILDDIR)/net.o            \
-      $(BUILDDIR)/net/socket.o     \
-      $(BUILDDIR)/net/server.o     \
-      $(BUILDDIR)/process/stdin.o  \
-      $(BUILDDIR)/process/stdout.o \
+OBJ = $(BUILDDIR)/path.o               \
+      $(BUILDDIR)/eventemitter.o       \
+      $(BUILDDIR)/querystring.o        \
+      $(BUILDDIR)/loop.o               \
+      $(BUILDDIR)/timers.o             \
+      $(BUILDDIR)/net.o                \
+      $(BUILDDIR)/net/socket.o         \
+      $(BUILDDIR)/net/server.o         \
+      $(BUILDDIR)/http/server.o        \
+      $(BUILDDIR)/http/client_stream.o \
+      $(BUILDDIR)/process/stdin.o      \
+      $(BUILDDIR)/process/stdout.o     \
       $(BUILDDIR)/main.o
 
 DEP = $(UVDIR)/uv.a            \

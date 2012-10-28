@@ -15,11 +15,22 @@
 #include "eventemitter.h"
 #include "querystring.h"
 #include "net.h"
+#include "http/server.h"
+#include "http/client_stream.h"
 #include "process/stdin.h"
 #include "process/stdout.h"
 
 int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
+
+  auto web = node::http::Server([](node::http::ClientStream* stream) {
+    std::cout << "url: " << stream->url << std::endl;
+    std::cout << "== headers" << std::endl;
+    for (auto& pair : stream->headers) {
+      std::cout << "  " << pair.first << ": " << pair.second << std::endl;
+    }
+  });
+  web.listen(5000);
 
   auto server = node::net::createServer([](node::net::Socket* socket) {
     socket->pipe(socket);

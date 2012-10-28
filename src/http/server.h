@@ -6,10 +6,14 @@
 #include "uv.h"
 
 #include "eventemitter.h"
+#include "client_stream.h"
 #include "net.h"
 
 namespace node {
 namespace http {
+
+class ClientStream;
+
 class Server : public EventEmitter {
 public:
   /**
@@ -20,7 +24,7 @@ public:
   /**
    *
    */
-  Server(std::function<void(void*)> cb);
+  Server(std::function<void(node::http::ClientStream*)> cb);
 
   /**
    *
@@ -41,6 +45,11 @@ public:
    *
    */
   bool listen(int port, const char* host, std::function<void(void*)> cb);
+
+  /**
+   *
+   */
+  bool listen(int port, const char* host, int backlog);
 
   /**
    *
@@ -67,7 +76,17 @@ private:
   /**
    *
    */
-  static void _onConnection(node::http::Server* self, void *data);
+  std::function<void(node::http::ClientStream*)> _cb;
+
+  /**
+   *
+   */
+  static void _onSocketConnection(node::http::Server* self, void *data);
+
+  /**
+   *
+   */
+  static void _onConnection(void *data);
 };
 }
 }
