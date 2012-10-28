@@ -1,14 +1,17 @@
-#include <iostream>
+#include <sstream>
+#include <iomanip>
+
+#include "string.h"
+
 #include "client_stream.h"
 
 node::http::ClientStream::ClientStream(node::http::Server* server,
                                        node::net::Socket* socket) {
   auto self = this;
   http_parser_init(&this->_parser, HTTP_REQUEST);
-  this->_parser.data = this;
-  this->_server     = server;
-  this->_socket     = socket;
-  this->_statusCode = 200;
+  this->_parser.data     = this;
+  this->_server          = server;
+  this->_socket          = socket;
   socket->on("data", [self](void* data) {
     auto buf  = (uv_buf_t*) data;
     http_parser_execute(
@@ -25,39 +28,69 @@ void node::http::ClientStream::writeContinue() {
 }
 
 void node::http::ClientStream::writeHead(int statusCode) {
-  // TODO
+  this->writeHead(statusCode, "OK");
 }
 
 void node::http::ClientStream::writeHead(int statusCode, const char* reason) {
-  // TODO
+  if (this->_headersWritten) { return; }
+  auto contentLength = this->_headers.find("Content-Length");
+  if (contentLength == this->_headers.end()) {
+    this->_headers["Transfer-Encoding"] = "chunked";
+    this->_isChunkedEncoding = true;
+  }
+  std::stringstream ss(std::stringstream::in | std::stringstream::out);
+  ss << "HTTP/1.1 " << statusCode << " " << reason << "\r\n";
+  for (auto& pair : this->_headers) {
+    ss << pair.first << ": " << pair.second << "\r\n";
+  }
+  ss << "\r\n";
+  auto str = ss.str();
+  this->_socket->write((void*)str.c_str(), str.length());
+  this->_headersWritten = true;
 }
 
 void node::http::ClientStream::setHeader(const char* name, const char* value) {
-  // TODO
+  this->_headers[name] = value;
 }
 
 const char* node::http::ClientStream::getHeader(const char* name) {
-  return "";
+  auto header = this->_headers.find(name);
+  if (header == this->_headers.end()) {
+    return nullptr;
+  } else {
+    return header->second.c_str();
+  }
 }
 
 void node::http::ClientStream::removeHeader(const char* name) {
-  // TODO
+  auto header = this->_headers.find(name);
+  if (header != this->_headers.end()) {
+    this->_headers.erase(header);
+  }
 }
 
 void node::http::ClientStream::write(void* data, size_t len) {
-  // TODO
+  if (!this->_headersWritten) {
+    this->writeHead(200, "OK");
+  }
+  std::stringstream ss(std::stringstream::in | std::stringstream::out);
+  ss << std::hex << len << "\r\n";
+  auto str = ss.str();
+  this->_socket->write((void*)str.c_str(), str.length());
+  this->_socket->write(data, len);
+  this->_socket->write((void*)"\r\n", 2);
 }
 
 void node::http::ClientStream::write(uv_buf_t* buf) {
-  // TODO
+  this->write((void*)buf->base, buf->len);
 }
 
 void node::http::ClientStream::write(const char* data) {
-  // TODO
+  this->write((void*)data, strlen(data));
 }
 
 void node::http::ClientStream::write(std::string data) {
-  // TODO
+  this->write((void*)data.c_str(), data.length());
 }
 
 void node::http::ClientStream::pause() {
@@ -69,23 +102,29 @@ void node::http::ClientStream::resume() {
 }
 
 void node::http::ClientStream::end() {
-  // TODO
+  if (this->_isChunkedEncoding) {
+    this->_socket->end((void*)"0\r\n\r\n", 5);
+  }
 }
 
 void node::http::ClientStream::end(void* data, size_t len) {
-  // TODO
+  this->write(data, len);
+  this->end();
 }
 
 void node::http::ClientStream::end(uv_buf_t* buf) {
-  // TODO
+  this->write(buf);
+  this->end();
 }
 
 void node::http::ClientStream::end(const char* data) {
-  // TODO
+  this->write(data);
+  this->end();
 }
 
 void node::http::ClientStream::end(std::string data) {
-  // TODO
+  this->write(data);
+  this->end();
 }
 
 int node::http::ClientStream::_onMessageBegin(http_parser* parser) {
@@ -97,6 +136,8 @@ int node::http::ClientStream::_onMessageBegin(http_parser* parser) {
   self->trailers.clear();
   self->_fieldTmp.clear();
   self->_tmp.clear();
+  self->_headersWritten  = false;
+  self->statusCode       = 200;
   return 0;
 }
 

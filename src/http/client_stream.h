@@ -220,6 +220,11 @@ private:
   /**
    *
    */
+  std::map<std::string, std::string> _headers;
+
+  /**
+   *
+   */
   std::string _fieldTmp;
 
   /**
@@ -231,6 +236,16 @@ private:
    *
    */
   bool _hasHeaderValue;
+
+  /**
+   *
+   */
+  bool _headersWritten;
+
+  /**
+   *
+   */
+  bool _isChunkedEncoding;
 
   /**
    *

@@ -24,11 +24,7 @@ int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
   auto web = node::http::Server([](node::http::ClientStream* stream) {
-    std::cout << "url: " << stream->url << std::endl;
-    std::cout << "== headers" << std::endl;
-    for (auto& pair : stream->headers) {
-      std::cout << "  " << pair.first << ": " << pair.second << std::endl;
-    }
+    stream->end("Hello world!");
   });
   web.listen(5000);
 

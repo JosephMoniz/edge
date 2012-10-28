@@ -5,6 +5,21 @@ Evented I/O for C++11. This is a heavy work in progress at the moment.
 Working Examples
 ================
 
+HTTP Server
+```c++
+int main(int argc, char **argv) {
+  auto loop = node::Loop::getDefault();
+
+  auto web = node::http::Server([](node::http::ClientStream* stream) {
+    stream->end("Hello world!");
+  });
+  web.listen(80);
+
+  loop->run();
+  return 0;
+}
+```
+
 TCP echo server:
 ```c++
 int main(int argc, char **argv) {
