@@ -5,40 +5,17 @@
 
 #include "uv.h"
 
-#include "eventemitter.h"
+#include "stream/pipe.h"
 
 namespace node {
 namespace process {
-class StdinClass : public EventEmitter {
+class StdinClass : public node::stream::Pipe {
 public:
 
   /**
    *
    */
   StdinClass();
-
-  /**
-   *
-   */
-  template <class WritableStream>
-  WritableStream* pipe(WritableStream* dest) {
-    this->on("data", [dest](void *data) {
-      dest->write((uv_buf_t*) data);
-    });
-    this->on("end", [dest](void *data) {
-      dest->end();
-    });
-    return dest;
-  }
-
-  /**
-   *
-   */
-  template <class WritableStream>
-  WritableStream& pipe(WritableStream& dest) {
-    this->pipe(&dest);
-    return dest;
-  }
 
 private:
 

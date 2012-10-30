@@ -69,28 +69,16 @@ void node::http::ClientStream::removeHeader(const char* name) {
   }
 }
 
-void node::http::ClientStream::write(void* data, size_t len) {
+void node::http::ClientStream::write(uv_buf_t* buf) {
   if (!this->_headersWritten) {
     this->writeHead(200, "OK");
   }
   std::stringstream ss(std::stringstream::in | std::stringstream::out);
-  ss << std::hex << len << "\r\n";
+  ss << std::hex << buf->len << "\r\n";
   auto str = ss.str();
   this->_socket->write((void*)str.c_str(), str.length());
-  this->_socket->write(data, len);
+  this->_socket->write(buf);
   this->_socket->write((void*)"\r\n", 2);
-}
-
-void node::http::ClientStream::write(uv_buf_t* buf) {
-  this->write((void*)buf->base, buf->len);
-}
-
-void node::http::ClientStream::write(const char* data) {
-  this->write((void*)data, strlen(data));
-}
-
-void node::http::ClientStream::write(std::string data) {
-  this->write((void*)data.c_str(), data.length());
 }
 
 void node::http::ClientStream::pause() {
@@ -105,26 +93,6 @@ void node::http::ClientStream::end() {
   if (this->_isChunkedEncoding) {
     this->_socket->end((void*)"0\r\n\r\n", 5);
   }
-}
-
-void node::http::ClientStream::end(void* data, size_t len) {
-  this->write(data, len);
-  this->end();
-}
-
-void node::http::ClientStream::end(uv_buf_t* buf) {
-  this->write(buf);
-  this->end();
-}
-
-void node::http::ClientStream::end(const char* data) {
-  this->write(data);
-  this->end();
-}
-
-void node::http::ClientStream::end(std::string data) {
-  this->write(data);
-  this->end();
 }
 
 int node::http::ClientStream::_onMessageBegin(http_parser* parser) {

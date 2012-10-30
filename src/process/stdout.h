@@ -6,29 +6,38 @@
 #include "uv.h"
 
 #include "eventemitter.h"
+#include "stream/writable.h"
 
 namespace node {
 namespace process {
-class StdoutClass : public EventEmitter {
+class StdoutClass : public EventEmitter, public node::stream::Writable {
 public:
 
+  /**
+   * Import the overloaded write methods from node::stream::Writable
+   */
+  using node::stream::Writable::write;
+
+  /**
+   * Import the overloaded end methods from node::stream::Writable
+   */
+  using node::stream::Writable::end;
+
+  /**
+   *
+   */
   StdoutClass();
 
-  void write(const char *str);
-
-  void write(std::string str);
-
+  /**
+   *
+   */
   void write(uv_buf_t* buf);
 
-  void write(void *data, size_t len);
-
+  /**
+   *
+   */
   void end();
 
-  void end(const char *str);
-
-  void end(std::string str);
-
-  void end(void *data, size_t len);
 
 private:
 

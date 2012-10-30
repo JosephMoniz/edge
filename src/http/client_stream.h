@@ -8,7 +8,7 @@
 #include "uv.h"
 #include "http_parser.h"
 
-#include "eventemitter.h"
+#include "stream/pipe.h"
 #include "server.h"
 #include "net.h"
 
@@ -17,11 +17,22 @@ namespace http {
 
 class Server;
 
-class ClientStream : public EventEmitter {
+class ClientStream : public node::stream::Writable, public node::stream::Pipe {
 
 friend node::http::Server;
 
 public:
+
+  /**
+   * Import the overloaded write methods from node::stream::Writable
+   */
+  using node::stream::Writable::write;
+
+  /**
+   * Import the overloaded end methods from node::stream::Writable
+   */
+  using node::stream::Writable::end;
+
   /**
    *
    */
@@ -29,37 +40,41 @@ public:
 
 
   /**
-   *
+   * This is the url of the received request
    */
   std::string url;
 
   /**
-   *
+   * This is the http version of the incoming request
    */
   std::string httpVersion;
 
   /**
-   *
+   * These are the incoming headers, not to be confused with the
+   * out going response headers
    */
   std::map<std::string, std::string> headers;
 
   /**
-   *
+   * These are the incoming trailers, not to be confused with the
+   * out going response trailers
    */
   std::map<std::string, std::string> trailers;
 
   /**
-   *
+   * This is the status code of the response
    */
   uint32_t statusCode;
 
   /**
-   *
+   * If this is true we will send the Date header in the response
+   * otherwise we'll ommit the Date header
    */
   bool sendDate;
 
   /**
-   *
+   * Typical constructor, sets up some initial state and gets the
+   * ball rolling
    */
   ClientStream(node::http::Server* server, node::net::Socket* socket);
 
@@ -69,49 +84,59 @@ public:
   void writeContinue();
 
   /**
+   * This function takes an HTTP response status code as an argument
+   * and renders the HTTP header portion of the response and sends
+   * it to the client with the default reason of "OK"
    *
+   * @param {int} statusCode - The status code to respond with
+   * @returns {void}
    */
   void writeHead(int statusCode);
 
   /**
+   * This function takes an HTTP response status code and a reason
+   * as a const char* and renders the HTTP header portion of the
+   * response and sends it to the client
    *
+   * @param {int} statusCode     - The status code to respond with
+   * @param {const char*} reason - The HTTP response reason
+   * @returns {void}
    */
   void writeHead(int statusCode, const char* reason);
 
   /**
+   * This function takes a header name and header value as it's
+   * arguments and sets the specified header to the specified
+   * value.
    *
+   * @param {const char*} name  - The name of the header to set
+   * @param {const char*} value - The value of the header to set
+   * @returns {void}
    */
   void setHeader(const char* name, const char* value);
 
   /**
+   * This function takes a header name and returns it's current
+   * value as a const char* if it exists otherwise nullptr
    *
+   * @param {const char*} name - The name of the header to fetch
+   * @returns {const char*}    - The value or nullptr
    */
   const char* getHeader(const char* name);
 
   /**
+   * This function takes a header name and removes it from the
+   * headers to be sent
    *
+   * @param {const char*} name - The name of the header to remove
+   * @returns {void}
    */
   void removeHeader(const char* name);
 
   /**
    *
    */
-  void write(void* data, size_t len);
-
-  /**
-   *
-   */
   void write(uv_buf_t* buf);
-
-  /**
-   *
-   */
-  void write(const char* data);
-
-  /**
-   *
-   */
-  void write(std::string data);
 
   /**
    *
@@ -127,49 +152,6 @@ public:
    *
    */
   void end();
-
-  /**
-   *
-   */
-  void end(void* data, size_t len);
-
-  /**
-   *
-   */
-  void end(uv_buf_t* buf);
-
-  /**
-   *
-   */
-  void end(const char* data);
-
-  /**
-   *
-   */
-  void end(std::string data);
-
-  /**
-   *
-   */
-  template <class WritableStream>
-  WritableStream* pipe(WritableStream* dest) {
-    this->on("data", [dest](void *data) {
-      dest->write((uv_buf_t*) data);
-    });
-    this->on("end", [dest](void *data) {
-      dest->end();
-    });
-    return dest;
-  };
-
-  /**
-   *
-   */
-  template <class WritableStream>
-  WritableStream& pipe(WritableStream& dest) {
-    this->pipe(&dest);
-    return dest;
-  };
 
   /**
    *

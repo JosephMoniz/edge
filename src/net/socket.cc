@@ -39,49 +39,23 @@ void node::net::Socket::connect(int port, const char* host,
 }
 
 int node::net::Socket::getBufferSize() {
-  // TODO: implment
+  // TODO: implement
   return 0;
 }
 
-void node::net::Socket::write(void* data, size_t len) {
+void node::net::Socket::write(uv_buf_t* buf) {
   auto container = new node::net::SocketWriterData_t;
-  uv_buf_t buf = { .base = (char*)data, .len = len };
   uv_write(
     &container->writer,
     (uv_stream_t*)&this->_handle,
-    &buf,
+    buf,
     1,
     node::net::Socket::_writeCb
   );
 }
 
-void node::net::Socket::write(uv_buf_t* buf) {
-  this->write(buf->base, buf->len);
-}
-
-void node::net::Socket::write(const char* data) {
-  this->write((void*)data, strlen(data));
-}
-
-void node::net::Socket::write(std::string data) {
-  this->write((void*)data.c_str(), data.length());
-}
-
 void node::net::Socket::end() {
   uv_close((uv_handle_t*)&this->_handle, node::net::Socket::_closeCb);
-}
-
-void node::net::Socket::end(void* data, size_t len) {
-  this->write(data, len);
-  this->end();
-}
-
-void node::net::Socket::end(const char* data) {
-  this->end((void*)data, strlen(data));
-}
-
-void node::net::Socket::end(std::string data) {
-  this->end((void*)data.c_str(), data.length());
 }
 
 void node::net::Socket::setTimeout(int timeout) {

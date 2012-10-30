@@ -5,7 +5,8 @@
 
 #include "uv.h"
 
-#include "eventemitter.h"
+#include "stream/pipe.h"
+#include "stream/writable.h"
 #include "server.h"
 
 namespace node {
@@ -25,11 +26,21 @@ typedef struct SocketConnectorData_s {
   node::net::Socket* self;
 } SocketConnectorData_t;
 
-class Socket : public EventEmitter {
+class Socket : public node::stream::Writable, public node::stream::Pipe {
 
 friend node::net::Server;
 
 public:
+
+  /**
+   * Import the overloaded write methods from node::stream::Writable
+   */
+  using node::stream::Writable::write;
+
+  /**
+   * Import the overloaded end methods from node::stream::Writable
+   */
+  using node::stream::Writable::end;
 
   /**
    * This is a really simple constructor that just initializes
@@ -118,25 +129,6 @@ public:
   int getBufferSize();
 
   /**
-   * This function writes `len` bytes worth of data starting at
-   * `data` to the underlying TCP stream
-   *
-   * EXAMPLE:
-   *  auto loop    = node::Loop::getDefault();
-   *  auto socket  = node::net::Socket();
-   *  char* buffer = "hi";
-   *  socket.connect(8080, [&]() {
-   *    socket.write((void*)buffer, 2);
-   *  });
-   *  loop->run();
-   *
-   * @param {void*} data - The start of the data to write
-   * @param {size_t} len - The ammount of data to write
-   * @returns {void}
-   */
-  void write(void* data, size_t len);
-
-  /**
    * This function writes a uv_buf_t to the underlying TCP stream
    *
    * EXAMPLE:
@@ -151,43 +143,7 @@ public:
    * @param {uv_buf_t*} buf - The uv_buf_t to write
    * @returns {void}
    */
-  void write(uv_buf_t* buf);
-
-  /**
-   * This function writes a zero terminated string and writes
-   * it to the underlying TCP stream.
-   *
-   * EXAMPLE:
-   *  auto loop       = node::Loop::getDefault();
-   *  auto socket     = node::net::Socket();
-   *  const char* buf = "hi";
-   *  socket.connect(8080, [&]() {
-   *    socket.write(buf);
-   *  });
-   *  loop->run();
-   *
-   * @param {const char*} data - The zero terminated string to write
-   * @returns {void}
-   */
-  void write(const char* data);
-
-  /**
-   * This function takes a std::string and writes it to the
-   * underlying TCP stream.
-   *
-   * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
-   *  auto str    = std::string("hi");
-   *  socket.connect(8080, [&]() {
-   *    socket.write(str);
-   *  });
-   *  loop->run();
-   *
-   * @param {std::string} data - The std::string to write
-   * @returns {void}
-   */
-  void write(std::string data);
+  virtual void write(uv_buf_t* buf);
 
   /**
    * This function closes the underlying TCP stream and emits
@@ -204,114 +160,6 @@ public:
    * @returns {void}
    */
   void end();
-
-  /**
-   * This function writes `len` amount of bytes starting at `data`
-   * to the underlying TCP stream then when the write is completed
-   * it closes the TCP stream and emits an 'end' event on completion
-   *
-   * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
-   *  char* buf   = "hi";
-   *  socket.connect(8080, [&]() {
-   *    socket.end((void*) hi, 2);
-   *  });
-   *  loop->run();
-   *
-   * @param {void*} data - The start of the data to write
-   * @param {size_t} len - The amount of bytes to write
-   * @returns {void}
-   */
-  void end(void* data, size_t len);
-
-  /**
-   * This function takes a zero terminated string and writes it to the
-   * underlying TCP stream then when the write is completed it closes
-   * the TCP stream and emits an 'end' event on completion
-   *
-   * EXAMPLE:
-   *  auto loop       = node::Loop::getDefault();
-   *  auto socket     = node::net::Socket();
-   *  const char* buf = "hi";
-   *  socket.connect(8080, [&]() {
-   *    socket.end(buf);
-   *  });
-   *  loop->run();
-   *
-   * @param {const char*} data - The zero terminated string to write
-   * @returns {void}
-   */
-  void end(const char* data);
-
-  /**
-   * This function takes a std::string and writes it to the underlying
-   * TCP stream then when the write is completed it cloces the TCP
-   * stream and emits an 'end' event on completion
-   *
-   * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
-   *  auto str    = std::string("hi");
-   *  socket.connect(8080, [&]() {
-   *    socket.end(str);
-   *  });
-   *  loop->run();
-   *
-   * @param {std::string} data - The std::string to write
-   * @returns {void}
-   */
-  void end(std::string data);
-
-  /**
-   * This function takes a pointer to a writable stream and pipes all the data
-   * receiveved by the underlying TCP socket directly to the passed in writable
-   * stream
-   *
-   * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
-   *  socket.connect(8080, [&]() {
-   *    socket.pipe(&node::process::stdout);
-   *  });
-   *  loop->run();
-   *
-   * @param {WritableStream*} dest - The writable stream to pipe to
-   * @returns {WritableStream*}    - The destination stream passed in
-   */
-  template <class WritableStream>
-  WritableStream* pipe(WritableStream* dest) {
-    this->on("data", [dest](void *data) {
-      dest->write((uv_buf_t*) data);
-    });
-    this->on("end", [dest](void *data) {
-      dest->end();
-    });
-    return dest;
-  };
-
-  /**
-   * This function takes a reference to a writable stream and pipes all the
-   * data received by the underlying TCP socket directly to the passed in
-   * writable stream.
-   *
-   * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
-   *  socket.connect(8080, [&]() {
-   *    socket.pipe(node::process::stdout);
-   *  });
-   *  loop->run();
-   *
-   * @param {WritableStream&} dest - The writable stream to pipe to
-   * @returns {WritableStream&}    - The destination stream passed in
-   */
-  template <class WritableStream>
-  WritableStream& pipe(WritableStream& dest) {
-    this->pipe(&dest);
-    return dest;
-  };
-
 
   /**
    *
