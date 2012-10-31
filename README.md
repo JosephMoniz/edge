@@ -5,16 +5,45 @@ Evented I/O for C++11. This is a heavy work in progress at the moment.
 Working Examples
 ================
 
-HTTP Server
+HTTP Server:
 ```c++
 int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
-  auto web = node::http::Server([](node::http::ClientStream* stream) {
+  auto server = node::http::Server([](node::http::ClientStream* stream) {
     stream->setHeader("Content-Type", "text/plain");
     stream->end("Hello world!");
   });
-  web.listen(80);
+  server.listen(80);
+
+  loop->run();
+  return 0;
+}
+```
+
+HTTP server w/ chunked encoding
+```c++
+int main(int argc, char **argv) {
+  auto loop = node::Loop::getDefault();
+
+  auto server = node::http::Server([](node::http::ClientStream* stream) {
+    stream->setHeader("Content-Type", "text/html");
+    stream->write(
+      "<html>"
+      "  <head>"
+      "    <title>node-cc</title>"
+      "  </head>"
+    );
+    node::Timer::setTimeout([=]() {
+      stream->end(
+        "  <body>"
+        "    <h1>Hello from node-cc</h1>"
+        "  </body>"
+        "</html>"
+      );
+    }, 2000);
+  });
+  server.listen(80);
 
   loop->run();
   return 0;
@@ -61,7 +90,6 @@ int main(int argc, char **argv) {
   }, 1000);
 
   loop->run();
-
   delete timer;
   return 0;
 }

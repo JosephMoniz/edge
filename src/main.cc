@@ -24,8 +24,21 @@ int main(int argc, char **argv) {
   auto loop = node::Loop::getDefault();
 
   auto web = node::http::Server([](node::http::ClientStream* stream) {
-    stream->setHeader("Content-Type", "text/plain");
-    stream->end("hello from C++");
+    stream->setHeader("Content-Type", "text/html");
+    stream->write(
+      "<html>"
+      "  <head>"
+      "    <title>node-cc</title>"
+      "  </head>"
+    );
+    node::Timer::setTimeout([=]() {
+      stream->end(
+        "  <body>"
+        "    <h1>Hello from node-cc</h1>"
+        "  </body>"
+        "</html>"
+      );
+    }, 2000);
   });
   web.listen(5000);
 
