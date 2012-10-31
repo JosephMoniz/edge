@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
   auto web = node::http::Server([](node::http::ClientStream* stream) {
     stream->setHeader("Content-Type", "text/plain");
-    stream->end("Hello world!");
+    stream->end("hello from C++");
   });
   web.listen(5000);
 
@@ -37,6 +37,7 @@ int main(int argc, char **argv) {
   auto socket = node::net::Socket();
   socket.connect(8000, [&]() {
     node::process::stdin.pipe(socket).pipe(node::process::stdout);
+    node::process::stdin.resume();
   });
 
   loop->run();

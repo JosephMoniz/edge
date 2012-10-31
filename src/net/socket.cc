@@ -101,7 +101,7 @@ void node::net::Socket::_readCb(uv_stream_t* stream, ssize_t nread,
   auto self = static_cast<node::net::Socket*>(stream->data);
 
   if (nread > 0) {
-    self->emit("data", static_cast<void*>(&buf));
+    self->emit("__data", static_cast<void*>(&buf));
   } else {
     uv_err_t error = uv_last_error(node::Loop::getDefault()->getUVLoop());
     if (error.code == UV_EOF) {

@@ -81,14 +81,6 @@ void node::http::ClientStream::write(uv_buf_t* buf) {
   this->_socket->write((void*)"\r\n", 2);
 }
 
-void node::http::ClientStream::pause() {
-  // TODO
-}
-
-void node::http::ClientStream::resume() {
-  // TODO
-}
-
 void node::http::ClientStream::end() {
   if (this->_isChunkedEncoding) {
     this->_socket->end((void*)"0\r\n\r\n", 5);
@@ -148,7 +140,7 @@ int node::http::ClientStream::_onBody(http_parser* parser, const char* at,
                                       size_t length) {
   auto self    = static_cast<node::http::ClientStream*>(parser->data);
   uv_buf_t buf = { .base = (char*)at, .len = length };
-  self->emit("data", (void*)&buf);
+  self->emit("__data", (void*)&buf);
   return 0;
 }
 

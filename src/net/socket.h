@@ -5,7 +5,7 @@
 
 #include "uv.h"
 
-#include "stream/pipe.h"
+#include "stream/readable.h"
 #include "stream/writable.h"
 #include "server.h"
 
@@ -26,7 +26,7 @@ typedef struct SocketConnectorData_s {
   node::net::Socket* self;
 } SocketConnectorData_t;
 
-class Socket : public node::stream::Writable, public node::stream::Pipe {
+class Socket : public node::stream::Readable, public node::stream::Writable {
 
 friend node::net::Server;
 

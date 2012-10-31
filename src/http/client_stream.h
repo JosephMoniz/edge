@@ -8,7 +8,8 @@
 #include "uv.h"
 #include "http_parser.h"
 
-#include "stream/pipe.h"
+#include "stream/readable.h"
+#include "stream/writable.h"
 #include "server.h"
 #include "net.h"
 
@@ -17,7 +18,8 @@ namespace http {
 
 class Server;
 
-class ClientStream : public node::stream::Writable, public node::stream::Pipe {
+class ClientStream : public node::stream::Readable,
+                     public node::stream::Writable {
 
 friend node::http::Server;
 
@@ -134,26 +136,27 @@ public:
   void removeHeader(const char* name);
 
   /**
+   * This function takes a uv_buf_t* and writes it to the underyling
+   * stream. If the headers haven't been written to the client yet
+   * the will be.
    *
+   * @param {uv_buf_t*} buf - The data to write to the stream
+   * @returns {void}
    */
   void write(uv_buf_t* buf);
 
   /**
+   * This function closes the underlying tcp stream. If HTTP headers have
+   * not yet be written they will and a sane HTTP response will be sent
+   * to the client.
    *
-   */
-  void pause();
-
-  /**
-   *
-   */
-  void resume();
-
-  /**
-   *
+   * @returns {void}
    */
   void end();
 
   /**
+   * This callback is ran every time we begin parsing a new HTTP request
+   *
    *
    */
   static int _onMessageBegin(http_parser* parser);

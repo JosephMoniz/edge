@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
 
   socket.connect(8000, [&]() {
     node::process::stdin.pipe(socket).pipe(node::process::stdout);
+    node::process::stdin.resume();
   });
 
   loop->run();

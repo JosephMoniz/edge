@@ -31,6 +31,7 @@ OBJ = $(BUILDDIR)/path.o               \
       $(BUILDDIR)/querystring.o        \
       $(BUILDDIR)/loop.o               \
       $(BUILDDIR)/timers.o             \
+      $(BUILDDIR)/stream/readable.o    \
       $(BUILDDIR)/stream/writable.o    \
       $(BUILDDIR)/net.o                \
       $(BUILDDIR)/net/socket.o         \
