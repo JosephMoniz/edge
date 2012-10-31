@@ -29,6 +29,23 @@ int64_t node::Timer::getRepeat() {
   return uv_timer_get_repeat(&this->_timer);
 }
 
+node::Timer* node::Timer::setTimeout(std::function<void()> cb,
+                                     int64_t timeout) {
+  auto timer = new node::Timer();
+  timer->start([=]() {
+    cb();
+    delete timer;
+  }, timeout, 0);
+  return timer;
+}
+
+node::Timer* node::Timer::setInterval(std::function<void()> cb,
+                                      int64_t interval) {
+  auto timer = new node::Timer();
+  timer->start(cb, interval, interval);
+  return timer;
+}
+
 void node::Timer::_wrapper(uv_timer_t* handle, int status) {
   node::Timer* timer = static_cast<node::Timer*>(handle->data);
   timer->_cb();

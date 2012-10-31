@@ -56,6 +56,16 @@ public:
    */
   int64_t getRepeat();
 
+  /**
+   *
+   */
+  static node::Timer* setTimeout(std::function<void()> cb, int64_t timeout);
+
+  /**
+   *
+   */
+  static node::Timer* setInterval(std::function<void()> cb, int64_t interval);
+
  private:
 
   /**

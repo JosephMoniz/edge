@@ -54,15 +54,15 @@ int main(int argc, char **argv) {
 Timers:
 ```c++
 int main(int argc, char **argv) {
-  auto loop  = node::Loop::getDefault();
-  auto timer = node::Timer();
+  auto loop = node::Loop::getDefault();
 
-  timer.start([]() {
+  auto timer = node::Timer::setInterval([]() {
     std::cout << "ping" << std::endl;
-  }, 1000, 1000);
+  }, 1000);
 
   loop->run();
 
+  delete timer;
   return 0;
 }
 ```
