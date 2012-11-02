@@ -1,5 +1,5 @@
-#ifndef NODE_PROCESS_STDIN_H_
-#define NODE_PROCESS_STDIN_H_ 1
+#ifndef EDGE_PROCESS_STDIN_H_
+#define EDGE_PROCESS_STDIN_H_ 1
 
 #include <functional>
 
@@ -7,9 +7,9 @@
 
 #include "stream/readable.h"
 
-namespace node {
+namespace edge {
 namespace process {
-class StdinClass : public node::stream::Readable {
+class StdinClass : public edge::stream::Readable {
 public:
 
   /**

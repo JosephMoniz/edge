@@ -1,5 +1,5 @@
-#ifndef NODE_HTTP_SERVER_H_
-#define NODE_HTTP_SERVER_H_ 1
+#ifndef EDGE_HTTP_SERVER_H_
+#define EDGE_HTTP_SERVER_H_ 1
 
 #include <functional>
 
@@ -9,7 +9,7 @@
 #include "client_stream.h"
 #include "net.h"
 
-namespace node {
+namespace edge {
 namespace http {
 
 class ClientStream;
@@ -24,7 +24,7 @@ public:
   /**
    *
    */
-  Server(std::function<void(node::http::ClientStream*)> cb);
+  Server(std::function<void(edge::http::ClientStream*)> cb);
 
   /**
    *
@@ -71,17 +71,17 @@ private:
   /**
    *
    */
-  node::net::Server _server;
+  edge::net::Server _server;
 
   /**
    *
    */
-  std::function<void(node::http::ClientStream*)> _cb;
+  std::function<void(edge::http::ClientStream*)> _cb;
 
   /**
    *
    */
-  static void _onSocketConnection(node::http::Server* self, void *data);
+  static void _onSocketConnection(edge::http::Server* self, void *data);
 
   /**
    *

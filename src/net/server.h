@@ -1,5 +1,5 @@
-#ifndef NODE_NET_SERVER_H_
-#define NODE_NET_SERVER_H_ 1
+#ifndef EDGE_NET_SERVER_H_
+#define EDGE_NET_SERVER_H_ 1
 
 #include <map>
 #include <functional>
@@ -9,12 +9,12 @@
 #include "eventemitter.h"
 #include "socket.h"
 
-namespace node {
+namespace edge {
 namespace net {
 
 class Socket;
 
-typedef std::function<void(node::net::Socket*)> ServerConnectionCb;
+typedef std::function<void(edge::net::Socket*)> ServerConnectionCb;
 
 class Server : public EventEmitter {
 public:
@@ -35,8 +35,8 @@ public:
    * port and once listening it emits the 'listening' event
    *
    * EXAMPLE:
-   *  auto server = node::net::createServer([](void *data) {
-   *    auto socket = static_cast<node::net::Socket*>(data);
+   *  auto server = edge::net::createServer([](void *data) {
+   *    auto socket = static_cast<edge::net::Socket*>(data);
    *    socket->end("payload");
    *  });
    *  server.listen(8080);
@@ -52,12 +52,12 @@ public:
    * supplied callback
    *
    * EXAMPLE:
-   *  auto server = node::net::createServer([](void *data) {
-   *    auto socket = static_cast<node::net::Socket*>(data);
+   *  auto server = edge::net::createServer([](void *data) {
+   *    auto socket = static_cast<edge::net::Socket*>(data);
    *    socket->end("payload");
    *  });
    *  server.listen(8080, [](void *) {
-   *    node::process::stdout.write("listening on port 8080\n");
+   *    edge::process::stdout.write("listening on port 8080\n");
    *  });
    *
    * @param {int} port      - The port ot listen on
@@ -71,8 +71,8 @@ public:
    * port and host and once listening it emits the 'listening' event
    *
    * EXAMPLE:
-   *  auto server = node::net::createServer([](void *data) {
-   *    auto socket = static_cast<node::net::Socket*>(data);
+   *  auto server = edge::net::createServer([](void *data) {
+   *    auto socket = static_cast<edge::net::Socket*>(data);
    *    socket->end("payload");
    *  });
    *  server.listen(8080, "0.0.0.0");
@@ -89,12 +89,12 @@ public:
    * calls the supplied callback
    *
    * EXAMPLE:
-   *  auto server = node::net::createServer([](void *data) {
-   *    auto socket = static_cast<node::net::Socket*>(data);
+   *  auto server = edge::net::createServer([](void *data) {
+   *    auto socket = static_cast<edge::net::Socket*>(data);
    *    socket->end("payload");
    *  });
    *  server.listen(8080, "0.0.0.0", [](void *) {
-   *    node::process::stdout.write("listening on  0.0.0.0:8080\n");
+   *    edge::process::stdout.write("listening on  0.0.0.0:8080\n");
    *  });
    *
    * @param {int} port         - The port to listen on
@@ -110,8 +110,8 @@ public:
    * sets the length of the connection backlog queue
    *
    * EXAMPLE:
-   *  auto server = node::net::createServer([](void *data) {
-   *    auto socket = static_cast<node::net::Socket*>(data);
+   *  auto server = edge::net::createServer([](void *data) {
+   *    auto socket = static_cast<edge::net::Socket*>(data);
    *    socket->end("payload");
    *  });
    *  server.listen(8080, "0.0.0.0", 512);
@@ -130,12 +130,12 @@ public:
    * callback
    *
    * EXAMPLE:
-   *  auto server = node::net::createServer([](void *data) {
-   *    auto socket = static_cast<node::net::Socket*>(data);
+   *  auto server = edge::net::createServer([](void *data) {
+   *    auto socket = static_cast<edge::net::Socket*>(data);
    *    socket->end("payload");
    *  });
    *  server.listen(8080, "0.0.0.0", 512, [](void *) {
-   *    node::process::stdout.write("listening on  0.0.0.0:8080\n");
+   *    edge::process::stdout.write("listening on  0.0.0.0:8080\n");
    *  });
    *
    * @param {int} port         - The port to listen on

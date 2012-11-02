@@ -29,6 +29,7 @@ INCLUDES = -I$(UVDIR)/include   \
 OBJ = $(BUILDDIR)/path.o               \
       $(BUILDDIR)/eventemitter.o       \
       $(BUILDDIR)/querystring.o        \
+      $(BUILDDIR)/url.o                \
       $(BUILDDIR)/loop.o               \
       $(BUILDDIR)/timers.o             \
       $(BUILDDIR)/stream/readable.o    \
@@ -46,7 +47,7 @@ DEP = $(UVDIR)/uv.a            \
       $(YAJLDIR)/yajl.a        \
       $(HTTPDIR)/http_parser.o
 
-$(BUILDDIR)/node: $(DEP) $(OBJ)
+$(BUILDDIR)/edge: $(DEP) $(OBJ)
 	$(CC) $(CFLAGS_FAST) -o $@ $^
 
 $(UVDIR)/Makefile:

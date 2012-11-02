@@ -12,6 +12,7 @@
 #include "loop.h"
 #include "timers.h"
 #include "path.h"
+#include "url.h"
 #include "eventemitter.h"
 #include "querystring.h"
 #include "net.h"
@@ -21,36 +22,25 @@
 #include "process/stdout.h"
 
 int main(int argc, char **argv) {
-  auto loop = node::Loop::getDefault();
+  auto loop = edge::Loop::getDefault();
 
-  auto web = node::http::Server([](node::http::ClientStream* stream) {
-    stream->setHeader("Content-Type", "text/html");
-    stream->write(
-      "<html>"
-      "  <head>"
-      "    <title>node-cc</title>"
-      "  </head>"
-    );
-    node::Timer::setTimeout([=]() {
-      stream->end(
-        "  <body>"
-        "    <h1>Hello from node-cc</h1>"
-        "  </body>"
-        "</html>"
-      );
-    }, 2000);
+  auto web = edge::http::Server([](edge::http::ClientStream* stream) {
+    stream->setHeader("Content-Type", "text/plain");
+    stream->end("Hello world!");
+    stream->on("close", [=](void* data) { delete stream; });
   });
   web.listen(5000);
 
-  auto server = node::net::createServer([](node::net::Socket* socket) {
+  auto server = edge::net::createServer([](edge::net::Socket* socket) {
     socket->pipe(socket);
+    socket->on("close", [=](void* data) { delete socket; });
   });
   server->listen(8000);
 
-  auto socket = node::net::Socket();
+  auto socket = edge::net::Socket();
   socket.connect(8000, [&]() {
-    node::process::stdin.pipe(socket).pipe(node::process::stdout);
-    node::process::stdin.resume();
+    edge::process::stdin.pipe(socket).pipe(edge::process::stdout);
+    edge::process::stdin.resume();
   });
 
   loop->run();
@@ -58,9 +48,9 @@ int main(int argc, char **argv) {
   /**
 
   /////// Testing out timers
-  auto loop = node::Loop::getDefault();
+  auto loop = edge::Loop::getDefault();
 
-  node::Timer timer;
+  edge::Timer timer;
   timer.start([]() {
     std::cout << "ping" << std::endl;
   }, 1000, 1000);
@@ -71,67 +61,67 @@ int main(int argc, char **argv) {
 
   /////// Tests that don't depend on the event loop
   std::cout << "== Testing extname" << std::endl;
-  std::cout << "lolwat.jpg: " << node::Path::extname("lolwat.jpg") << std::endl;
-  std::cout << "/a/wat.jpg: " << node::Path::extname("/a/wat.jpg") << std::endl;
-  std::cout << "lolwat.: " << node::Path::extname("lolwat.") << std::endl;
-  std::cout << "lolwat: " << node::Path::extname("lolwat") << std::endl;
+  std::cout << "lolwat.jpg: " << edge::Path::extname("lolwat.jpg") << std::endl;
+  std::cout << "/a/wat.jpg: " << edge::Path::extname("/a/wat.jpg") << std::endl;
+  std::cout << "lolwat.: " << edge::Path::extname("lolwat.") << std::endl;
+  std::cout << "lolwat: " << edge::Path::extname("lolwat") << std::endl;
   std::cout << std::endl;
 
   std::cout << "== Testing basename" << std::endl;
-  std::cout << "wat.jpg: " << node::Path::basename("wat.jpg") << std::endl;
-  std::cout << "/b/a.jpg: " << node::Path::basename("/b/a.jpg") << std::endl;
-  std::cout << "/b/wat/: " << node::Path::basename("/b/wat/") << std::endl;
+  std::cout << "wat.jpg: " << edge::Path::basename("wat.jpg") << std::endl;
+  std::cout << "/b/a.jpg: " << edge::Path::basename("/b/a.jpg") << std::endl;
+  std::cout << "/b/wat/: " << edge::Path::basename("/b/wat/") << std::endl;
   std::cout << std::endl;
 
   std::cout << "== Testing basename w/ extension" << std::endl;
-  std::cout << "a.jpg: " << node::Path::basename("a.jpg", "jpg") << std::endl;
+  std::cout << "a.jpg: " << edge::Path::basename("a.jpg", "jpg") << std::endl;
   std::cout << "/b/a.jpg: "
-            << node::Path::basename("/b/a.jpg", "jpg")
+            << edge::Path::basename("/b/a.jpg", "jpg")
             << std::endl;
   std::cout << "/b/wat: "
-            << node::Path::basename("/b/wat", "jpg")
+            << edge::Path::basename("/b/wat", "jpg")
             << std::endl;
   std::cout << "/b/wat/: "
-            << node::Path::basename("/b/wat/", "jpg")
+            << edge::Path::basename("/b/wat/", "jpg")
             << std::endl;
   std::cout << std::endl;
 
   std::cout << "== Testing dirname" << std::endl;
-  std::cout << "wat.jpg: " << node::Path::dirname("wat.jpg") << std::endl;
-  std::cout << "/b/a.jpg: " << node::Path::dirname("/b/a.jpg") << std::endl;
-  std::cout << "/b/wat/: " << node::Path::dirname("/b/wat/") << std::endl;
-  std::cout << "/b/wat: " << node::Path::dirname("/b/wat") << std::endl;
-  std::cout << "/b/wat//: " << node::Path::dirname("/b/wat//") << std::endl;
+  std::cout << "wat.jpg: " << edge::Path::dirname("wat.jpg") << std::endl;
+  std::cout << "/b/a.jpg: " << edge::Path::dirname("/b/a.jpg") << std::endl;
+  std::cout << "/b/wat/: " << edge::Path::dirname("/b/wat/") << std::endl;
+  std::cout << "/b/wat: " << edge::Path::dirname("/b/wat") << std::endl;
+  std::cout << "/b/wat//: " << edge::Path::dirname("/b/wat//") << std::endl;
   std::cout << std::endl;
 
   std::cout << "== Testing normalize" << std::endl;
-  std::cout << "wat.jpg: " << node::Path::normalize("wat.jpg") << std::endl;
+  std::cout << "wat.jpg: " << edge::Path::normalize("wat.jpg") << std::endl;
   std::cout << "/a/b/c/../d: "
-            << node::Path::normalize("/a/b/c/../d")
+            << edge::Path::normalize("/a/b/c/../d")
             << std::endl;
   std::cout << "a/b/c/../../d: "
-            << node::Path::normalize("a/b/c/../../d")
+            << edge::Path::normalize("a/b/c/../../d")
             << std::endl;
-  std::cout << "/b/wat//: " << node::Path::normalize("/b/wat//") << std::endl;
-  std::cout << "/b///wat/: " << node::Path::normalize("/b///wat/") << std::endl;
-  std::cout << ": " << node::Path::normalize("") << std::endl;
-  std::cout << "/: " << node::Path::normalize("/") << std::endl;
+  std::cout << "/b/wat//: " << edge::Path::normalize("/b/wat//") << std::endl;
+  std::cout << "/b///wat/: " << edge::Path::normalize("/b///wat/") << std::endl;
+  std::cout << ": " << edge::Path::normalize("") << std::endl;
+  std::cout << "/: " << edge::Path::normalize("/") << std::endl;
   std::cout << std::endl;
 
   std::cout << "== Testing join" << std::endl;
   std::cout << "join(\"wat\", \"lol\"): "
-            << node::Path::join({"wat", "lol"})
+            << edge::Path::join({"wat", "lol"})
             << std::endl;
   std::cout << "join(\"/a\", \"///b\"): "
-            << node::Path::join({"/a", "///b"})
+            << edge::Path::join({"/a", "///b"})
             << std::endl;
   std::cout << "join(\"/a\", \"b\", \"c\", \"..\", \"d\"): "
-            << node::Path::join({"/a", "b", "c", "..", "d"})
+            << edge::Path::join({"/a", "b", "c", "..", "d"})
             << std::endl;
   std::cout << std::endl;
 
   std::cout << "== Testing event emitter" << std::endl;
-  node::EventEmitter emitter;
+  edge::EventEmitter emitter;
   std::cout << "test on(): ";
   emitter.on("test", [] (void *data) { std::cout << "in event" << std::endl; });
   emitter.emit("test", nullptr);
@@ -153,7 +143,7 @@ int main(int argc, char **argv) {
   std::cout << std::endl;
 
   std::cout << "== Parsing query string" << std::endl;
-  auto queryString = node::QueryString::parse("key=value&works=true&works=yes");
+  auto queryString = edge::QueryString::parse("key=value&works=true&works=yes");
   for (auto &pair : queryString) {
     for (auto &value : pair.second) {
       std::cout << pair.first << "=" << value << std::endl;
@@ -162,7 +152,7 @@ int main(int argc, char **argv) {
   std::cout << std::endl;
 
   std::cout << "== Testing stringify" << std::endl;
-  std::cout << node::QueryString::stringify(queryString) << std::endl;
+  std::cout << edge::QueryString::stringify(queryString) << std::endl;
 
   */
 }

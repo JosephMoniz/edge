@@ -1,12 +1,12 @@
-#ifndef NODE_NET_H_
-#define NODE_NET_H_ 1
+#ifndef EDGE_NET_H_
+#define EDGE_NET_H_ 1
 
 #include <functional>
 
 #include "net/server.h"
 #include "net/socket.h"
 
-namespace node {
+namespace edge {
 namespace net {
 
   /**
@@ -14,9 +14,9 @@ namespace net {
    * and binding a 'connection' listener to it.
    *
    * @param {std::function} cb     - The callback to run received connections
-   * @returns {node::net::Server*} - The pointer to the heap allocated server
+   * @returns {edge::net::Server*} - The pointer to the heap allocated server
    */
-  node::net::Server* createServer(node::net::ServerConnectionCb cb);
+  edge::net::Server* createServer(edge::net::ServerConnectionCb cb);
 
 }
 }

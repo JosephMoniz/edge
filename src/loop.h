@@ -1,17 +1,17 @@
-#ifndef NODE_LOOP_H_
-#define NODE_LOOP_H_ 1
+#ifndef EDGE_LOOP_H_
+#define EDGE_LOOP_H_ 1
 
 #include "uv.h"
 
-namespace node {
+namespace edge {
 class Loop {
 public:
   /**
    * This function returns the default loop instance
    *
-   * @returns {node::Loop*} - The default loop instance
+   * @returns {edge::Loop*} - The default loop instance
    */
-  static node::Loop* getDefault();
+  static edge::Loop* getDefault();
 
   /**
    * This function deletes teh default loop instance
@@ -20,7 +20,6 @@ public:
    */
   static void deleteDefault();
 
-  // TODO: verify return value
   /**
    * This function runs the current loop until no more active events
    * are being processed
@@ -58,7 +57,7 @@ public:
   /**
    * private copy constructor so you can't directly copy a loop instance
    */
-  Loop(node::Loop const&){};
+  Loop(edge::Loop const&){};
 
 };
 }

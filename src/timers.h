@@ -1,11 +1,11 @@
-#ifndef NODE_TIMER_H_
-#define NODE_TIMER_H_ 1
+#ifndef EDGE_TIMER_H_
+#define EDGE_TIMER_H_ 1
 
 #include <functional>
 
 #include "uv.h"
 
-namespace node {
+namespace edge {
 class Timer {
 public:
   /**
@@ -59,12 +59,12 @@ public:
   /**
    *
    */
-  static node::Timer* setTimeout(std::function<void()> cb, int64_t timeout);
+  static edge::Timer* setTimeout(std::function<void()> cb, int64_t timeout);
 
   /**
    *
    */
-  static node::Timer* setInterval(std::function<void()> cb, int64_t interval);
+  static edge::Timer* setInterval(std::function<void()> cb, int64_t interval);
 
  private:
 

@@ -1,6 +1,6 @@
 #include "net.h"
 
-node::net::Server* node::net::createServer(node::net::ServerConnectionCb cb) {
-  auto server = new node::net::Server(cb);
+edge::net::Server* edge::net::createServer(edge::net::ServerConnectionCb cb) {
+  auto server = new edge::net::Server(cb);
   return server;
 }

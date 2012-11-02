@@ -2,7 +2,7 @@
 
 #include "readable.h"
 
-node::stream::Readable::Readable() {
+edge::stream::Readable::Readable() {
   this->_isPaused = false;
   this->on("__data", [=](void* data) {
     if (this->_isPaused) {
@@ -18,11 +18,14 @@ node::stream::Readable::Readable() {
   });
 }
 
+edge::stream::Readable::~Readable() {
+  // required evil
+}
 
-void node::stream::Readable::pause() {
+void edge::stream::Readable::pause() {
   this->_isPaused = true;
 }
-void node::stream::Readable::resume() {
+void edge::stream::Readable::resume() {
   this->_isPaused = false;
   if (this->_buffer.size()) {
     uv_buf_t buf = {

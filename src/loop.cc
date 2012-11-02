@@ -1,26 +1,26 @@
 #include "loop.h"
 
-node::Loop::Loop() {
+edge::Loop::Loop() {
   this->_loop = uv_loop_new();
 }
 
-node::Loop* node::Loop::getDefault() {
-  static node::Loop _instance;
+edge::Loop* edge::Loop::getDefault() {
+  static edge::Loop _instance;
   return &_instance;
 }
 
-void node::Loop::deleteDefault() {
-  uv_loop_delete(node::Loop::getDefault()->getUVLoop());
+void edge::Loop::deleteDefault() {
+  uv_loop_delete(edge::Loop::getDefault()->getUVLoop());
 }
 
-int node::Loop::run() {
+int edge::Loop::run() {
   return uv_run(this->_loop);
 }
 
-int node::Loop::runOnce() {
+int edge::Loop::runOnce() {
   return uv_run_once(this->_loop);
 }
 
-uv_loop_t* node::Loop::getUVLoop() {
+uv_loop_t* edge::Loop::getUVLoop() {
   return this->_loop;
 }

@@ -1,12 +1,12 @@
-#ifndef NODE_EVENT_EMITTER_H_
-#define NODE_EVENT_EMITTER_H_ 1
+#ifndef EDGE_EVENT_EMITTER_H_
+#define EDGE_EVENT_EMITTER_H_ 1
 
 #include <string>
 #include <map>
 #include <vector>
 #include <functional>
 
-namespace node {
+namespace edge {
 class EventEmitter {
 public:
 
@@ -17,7 +17,7 @@ public:
    * be executed
    *
    * EXAMPLE:
-   *    node::EventEmitter emitter;
+   *    edge::EventEmitter emitter;
    *    emitter.on("load", [](void *data) { std::cout << "loaded"; });
    *    emitter.emit("load", nullptr); // -> loaded
    *
@@ -36,7 +36,7 @@ public:
    * to be executed
    *
    * EXAMPLE:
-   *    node::EventEmitter emitter;
+   *    edge::EventEmitter emitter;
    *    emitter.once("loaded", [](void *data) { std::cout << "loaded"; });
    *    emitter.emit("loaded", nullptr); // -> loaded
    *    emitter.emit("loaded", nullptr); // ->
@@ -52,7 +52,7 @@ public:
    * object that it is called on.
    *
    * EXAMPLE:
-   *    node::EventEmitter emitter;
+   *    edge::EventEmitter emitter;
    *    emitter.on("loaded", [](void *data) { std::cout << "loaded"; });
    *    emitter.emit("loaded", nullptr); // -> loaded
    *    emitter.removeAllListeners();
@@ -67,7 +67,7 @@ public:
    * event on the object that this function is called from.
    *
    * EXAMPLE:
-   *    node::EventEmitter emitter;
+   *    edge::EventEmitter emitter;
    *    emitter.on("loaded", [](void *data) { std::cout << "loaded"; });
    *    emitter.emit("loaded", nullptr); // -> loaded
    *    emitter.removeAllListeners("verified");
@@ -85,7 +85,7 @@ public:
    * passes them the supplied void*
    *
    * EXAMPLE:
-   *    node::EventEmitter emitter;
+   *    edge::EventEmitter emitter;
    *    emitter.on("load", [](void *data) { std::cout << "loaded"; });
    *    emitter.emit("load", nullptr); // -> loaded
    *

@@ -4,11 +4,11 @@
 
 #include "querystring.h"
 
-node::QueryStringMap node::QueryString::parse(std::string query) {
+edge::QueryStringMap edge::QueryString::parse(std::string query) {
   QueryStringMap map;
   std::string accumulatorKey;
   std::string accumulatorValue;
-  node::QueryStringState state = QUERY_STRING_STATE_KEY;
+  edge::QueryStringState state = QUERY_STRING_STATE_KEY;
 
   for (auto &c : query) {
     switch(state) {
@@ -39,7 +39,7 @@ node::QueryStringMap node::QueryString::parse(std::string query) {
   return map;
 }
 
-std::string node::QueryString::stringify(node::QueryStringMap query) {
+std::string edge::QueryString::stringify(edge::QueryStringMap query) {
   std::string resolved = "";
 
   for (auto &pair : query) {

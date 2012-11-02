@@ -1,4 +1,4 @@
-Node.cc
+Edge
 =======
 Evented I/O for C++11. This is a heavy work in progress at the moment.
 
@@ -8,9 +8,9 @@ Working Examples
 HTTP Server:
 ```c++
 int main(int argc, char **argv) {
-  auto loop = node::Loop::getDefault();
+  auto loop = edge::Loop::getDefault();
 
-  auto server = node::http::Server([](node::http::ClientStream* stream) {
+  auto server = edge::http::Server([](edge::http::ClientStream* stream) {
     stream->setHeader("Content-Type", "text/plain");
     stream->end("Hello world!");
   });
@@ -24,9 +24,9 @@ int main(int argc, char **argv) {
 HTTP server w/ chunked encoding
 ```c++
 int main(int argc, char **argv) {
-  auto loop = node::Loop::getDefault();
+  auto loop = edge::Loop::getDefault();
 
-  auto server = node::http::Server([](node::http::ClientStream* stream) {
+  auto server = edge::http::Server([](edge::http::ClientStream* stream) {
     stream->setHeader("Content-Type", "text/html");
     stream->write(
       "<html>"
@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
       "    <title>node-cc</title>"
       "  </head>"
     );
-    node::Timer::setTimeout([=]() {
+    edge::Timer::setTimeout([=]() {
       stream->end(
         "  <body>"
         "    <h1>Hello from node-cc</h1>"
@@ -53,9 +53,9 @@ int main(int argc, char **argv) {
 TCP echo server:
 ```c++
 int main(int argc, char **argv) {
-  auto loop = node::Loop::getDefault();
+  auto loop = edge::Loop::getDefault();
 
-  auto server = node::net::createServer([](node::net::Socket* socket) {
+  auto server = edge::net::createServer([](edge::net::Socket* socket) {
     socket->pipe(socket);
   });
   server->listen(8000);
@@ -68,12 +68,12 @@ int main(int argc, char **argv) {
 TCP telnet clone (stdin -> socket -> stdout):
 ```c++
 int main(int argc, char **argv) {
-  auto loop   = node::Loop::getDefault();
-  auto socket = node::net::Socket();
+  auto loop   = edge::Loop::getDefault();
+  auto socket = edge::net::Socket();
 
   socket.connect(8000, [&]() {
-    node::process::stdin.pipe(socket).pipe(node::process::stdout);
-    node::process::stdin.resume();
+    edge::process::stdin.pipe(socket).pipe(edge::process::stdout);
+    edge::process::stdin.resume();
   });
 
   loop->run();
@@ -83,9 +83,9 @@ int main(int argc, char **argv) {
 Timers:
 ```c++
 int main(int argc, char **argv) {
-  auto loop = node::Loop::getDefault();
+  auto loop = edge::Loop::getDefault();
 
-  auto timer = node::Timer::setInterval([]() {
+  auto timer = edge::Timer::setInterval([]() {
     std::cout << "ping" << std::endl;
   }, 1000);
 

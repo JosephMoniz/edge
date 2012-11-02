@@ -1,5 +1,5 @@
-#ifndef NODE_PROCESS_STDOUT_H_
-#define NODE_PROCESS_STDOUT_H_ 1
+#ifndef EDGE_PROCESS_STDOUT_H_
+#define EDGE_PROCESS_STDOUT_H_ 1
 
 #include <functional>
 
@@ -8,20 +8,20 @@
 #include "eventemitter.h"
 #include "stream/writable.h"
 
-namespace node {
+namespace edge {
 namespace process {
-class StdoutClass : public EventEmitter, public node::stream::Writable {
+class StdoutClass : public EventEmitter, public edge::stream::Writable {
 public:
 
   /**
-   * Import the overloaded write methods from node::stream::Writable
+   * Import the overloaded write methods from edge::stream::Writable
    */
-  using node::stream::Writable::write;
+  using edge::stream::Writable::write;
 
   /**
-   * Import the overloaded end methods from node::stream::Writable
+   * Import the overloaded end methods from edge::stream::Writable
    */
-  using node::stream::Writable::end;
+  using edge::stream::Writable::end;
 
   /**
    * This is a basic constructor responsible for setting up the intitial

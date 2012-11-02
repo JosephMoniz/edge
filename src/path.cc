@@ -7,7 +7,7 @@
 
 #include "path.h"
 
-std::string node::Path::normalize(std::string path) {
+std::string edge::Path::normalize(std::string path) {
   bool isAbsolute      = path[0] == '/';
   bool trailingSlash   = *(path.end() - 1) == '/';
   auto it              = path.rbegin();
@@ -84,7 +84,7 @@ std::string node::Path::normalize(std::string path) {
   return std::string(resolved.rbegin(), resolved.rend());
 }
 
-std::string node::Path::join(std::initializer_list<std::string> peices) {
+std::string edge::Path::join(std::initializer_list<std::string> peices) {
   std::string resolved = "";
 
   for (auto &peice : peices) {
@@ -93,11 +93,11 @@ std::string node::Path::join(std::initializer_list<std::string> peices) {
   }
   resolved.erase(resolved.end() - 1);
 
-  return node::Path::normalize(resolved);
+  return edge::Path::normalize(resolved);
 }
 
-std::string node::Path::dirname(std::string path) {
-  auto it = node::Path::_basenameIterator(path);
+std::string edge::Path::dirname(std::string path) {
+  auto it = edge::Path::_basenameIterator(path);
   if (it == path.begin()) {
     if (*it == '/') {
       return std::string("/");
@@ -109,12 +109,12 @@ std::string node::Path::dirname(std::string path) {
   }
 }
 
-std::string node::Path::basename(std::string path) {
-  return std::string(node::Path::_basenameIterator(path), path.end());
+std::string edge::Path::basename(std::string path) {
+  return std::string(edge::Path::_basenameIterator(path), path.end());
 }
 
-std::string node::Path::basename(std::string path, std::string ext) {
-  auto it = node::Path::_basenameIterator(path);
+std::string edge::Path::basename(std::string path, std::string ext) {
+  auto it = edge::Path::_basenameIterator(path);
   auto hasExtension = std::equal(ext.rbegin(), ext.rend(), path.rbegin());
   if (hasExtension) {
     return std::string(it, (path.rbegin() + ext.length()).base() - 1);
@@ -123,7 +123,7 @@ std::string node::Path::basename(std::string path, std::string ext) {
   }
 }
 
-std::string node::Path::extname(std::string path) {
+std::string edge::Path::extname(std::string path) {
   auto it = std::find(path.rbegin(), path.rend(), '.');
   if (it == path.rend()) {
     return "";
@@ -132,7 +132,7 @@ std::string node::Path::extname(std::string path) {
   }
 }
 
-std::string::iterator node::Path::_basenameIterator(std::string &path) {
+std::string::iterator edge::Path::_basenameIterator(std::string &path) {
   auto begin = path.rbegin();
   if (*begin == '/') { begin++; }
   return std::find(begin, path.rend(), '/').base();

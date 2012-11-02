@@ -1,11 +1,11 @@
-#ifndef NODE_STREAM_WRITABLE_H_
-#define NODE_STREAM_WRITABLE_H_ 1
+#ifndef EDGE_STREAM_WRITABLE_H_
+#define EDGE_STREAM_WRITABLE_H_ 1
 
 #include <string>
 
 #include "uv.h"
 
-namespace node {
+namespace edge {
 namespace stream {
 class Writable {
 public:
@@ -14,8 +14,8 @@ public:
    * This function writes a uv_buf_t to the underlying TCP stream
    *
    * EXAMPLE:
-   *  auto loop    = node::Loop::getDefault();
-   *  auto socket  = node::net::Socket();
+   *  auto loop    = edge::Loop::getDefault();
+   *  auto socket  = edge::net::Socket();
    *  uv_buf_t buf = { .base = "hi", .len = 2 };
    *  socket.connect(8080, [&]() {
    *    socket.write(&buf);
@@ -32,8 +32,8 @@ public:
    * `data` to the underlying TCP stream
    *
    * EXAMPLE:
-   *  auto loop    = node::Loop::getDefault();
-   *  auto socket  = node::net::Socket();
+   *  auto loop    = edge::Loop::getDefault();
+   *  auto socket  = edge::net::Socket();
    *  char* buffer = "hi";
    *  socket.connect(8080, [&]() {
    *    socket.write((void*)buffer, 2);
@@ -51,8 +51,8 @@ public:
    * it to the underlying TCP stream.
    *
    * EXAMPLE:
-   *  auto loop       = node::Loop::getDefault();
-   *  auto socket     = node::net::Socket();
+   *  auto loop       = edge::Loop::getDefault();
+   *  auto socket     = edge::net::Socket();
    *  const char* buf = "hi";
    *  socket.connect(8080, [&]() {
    *    socket.write(buf);
@@ -69,8 +69,8 @@ public:
    * underlying TCP stream.
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  auto str    = std::string("hi");
    *  socket.connect(8080, [&]() {
    *    socket.write(str);
@@ -87,8 +87,8 @@ public:
    * an 'end' event on completion
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  socket.connect(8080, [&]() {
    *    socket.end();
    *  });
@@ -103,8 +103,8 @@ public:
    * to the underlying stream and then ends the stream
    *
    * EXAMPLE:
-   *  auto loop    = node::Loop::getDefault();
-   *  auto socket  = node::net::Socket();
+   *  auto loop    = edge::Loop::getDefault();
+   *  auto socket  = edge::net::Socket();
    *  uv_buf_t buf = { .base = "hi", .len = 2 };
    *  socket.connect(8080, [&]() {
    *    socket.end(buf);
@@ -122,8 +122,8 @@ public:
    * it closes the TCP stream and emits an 'end' event on completion
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  char* buf   = "hi";
    *  socket.connect(8080, [&]() {
    *    socket.end((void*) hi, 2);
@@ -142,8 +142,8 @@ public:
    * the TCP stream and emits an 'end' event on completion
    *
    * EXAMPLE:
-   *  auto loop       = node::Loop::getDefault();
-   *  auto socket     = node::net::Socket();
+   *  auto loop       = edge::Loop::getDefault();
+   *  auto socket     = edge::net::Socket();
    *  const char* buf = "hi";
    *  socket.connect(8080, [&]() {
    *    socket.end(buf);
@@ -161,8 +161,8 @@ public:
    * stream and emits an 'end' event on completion
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  auto str    = std::string("hi");
    *  socket.connect(8080, [&]() {
    *    socket.end(str);

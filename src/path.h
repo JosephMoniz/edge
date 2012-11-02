@@ -1,10 +1,10 @@
-#ifndef NODE_PATH_H_
-#define NODE_PATH_H_ 1
+#ifndef EDGE_PATH_H_
+#define EDGE_PATH_H_ 1
 
 #include <string>
 #include <initializer_list>
 
-namespace node {
+namespace edge {
 class Path {
 public:
 
@@ -15,12 +15,12 @@ public:
    * directories correctly traverse to the parent directory.
    *
    * EXAMPLES:
-   *    node::Path::normalize("/a/b/c/../d");    // -> /a/b/d
-   *    node::Path::normalize("/a/b/c/../../d"); // -> /a/d
-   *    node::Path::normalize("/b/wat//");       // -> /b/wat/
-   *    node::Path::normalize(/b///wat/);        // -> /b/wat/
-   *    node::Path::normalize("");               // -> .
-   *    node::Path::normalize("/");              // -> /
+   *    edge::Path::normalize("/a/b/c/../d");    // -> /a/b/d
+   *    edge::Path::normalize("/a/b/c/../../d"); // -> /a/d
+   *    edge::Path::normalize("/b/wat//");       // -> /b/wat/
+   *    edge::Path::normalize(/b///wat/);        // -> /b/wat/
+   *    edge::Path::normalize("");               // -> .
+   *    edge::Path::normalize("/");              // -> /
    *
    * @param {std::string} path - The path to normalize
    * @returns {std::string}    - The normalized path
@@ -33,9 +33,9 @@ public:
    * normalization on the result.
    *
    * EXAMPLES:
-   *    node::Path::join({"wat", "lol"});              // -> wat/lol
-   *    node::Path::join({"/a", "///b"});              // -> /a/b
-   *    node::Path::join({"/a", "b", "c", "..", "d"}); // -> /a/b/d
+   *    edge::Path::join({"wat", "lol"});              // -> wat/lol
+   *    edge::Path::join({"/a", "///b"});              // -> /a/b
+   *    edge::Path::join({"/a", "b", "c", "..", "d"}); // -> /a/b/d
    *
    * @param {std::string ...} peices - The peices of the filesystem path to
    *                                   join together and normalize
@@ -48,8 +48,8 @@ public:
    * returns the directory path.
    *
    * EXAMPLES:
-   *    node::Path::dirname("wat.jpg");  // -> .
-   *    node::Path::dirname("/b/a.jpg"); // -> /b
+   *    edge::Path::dirname("wat.jpg");  // -> .
+   *    edge::Path::dirname("/b/a.jpg"); // -> /b
    *
    * @param {std::string} path - The path to extract the director path from
    * @returns {std::string}    - The extracted directory path
@@ -61,9 +61,9 @@ public:
    * the basename portion of that path.
    *
    * EXAMPLES:
-   *    node::Path::basename("wat.jpg");  // -> wat.jpg
-   *    node::Path::basename("/b/a.jpg"); // -> /b/a.jpg
-   *    node::Path::basename("/b/wat/");  // -> wat/
+   *    edge::Path::basename("wat.jpg");  // -> wat.jpg
+   *    edge::Path::basename("/b/a.jpg"); // -> /b/a.jpg
+   *    edge::Path::basename("/b/wat/");  // -> wat/
    *
    * @param {std::string} path - The path to extract the basename from
    * @returns {std::string}    - The extracted basename from the path
@@ -77,10 +77,10 @@ public:
    * will only be removed if it matches the file extension passed in.
    *
    * EXAMPLES:
-   *    node::Path::basename("a.jpg", "jpg");    // -> a
-   *    node::Path::basename("/b/a.jpg", "jpg"); // -> a
-   *    node::Path::basename("/b/wat", "jpg");   // -> wat
-   *    node::Path::basename("/b/wat/", "jpg");  // -> wat/
+   *    edge::Path::basename("a.jpg", "jpg");    // -> a
+   *    edge::Path::basename("/b/a.jpg", "jpg"); // -> a
+   *    edge::Path::basename("/b/wat", "jpg");   // -> wat
+   *    edge::Path::basename("/b/wat/", "jpg");  // -> wat/
    *
    * @param {std::string} path - The path to extract the basename from
    * @param {std::string} ext  - The extension to exclude from the basename
@@ -93,10 +93,10 @@ public:
    * the file extension as a std::string
    *
    * EXAMPLES:
-   *    node::Path::extname("lolwat.jpg"); // -> .jpg
-   *    node::Path::extname("/a/wat.jpg"); // -> .jpg
-   *    node::Path::extname("lolwat.");    // -> .
-   *    node::Path::extname("lolwat");     // ->
+   *    edge::Path::extname("lolwat.jpg"); // -> .jpg
+   *    edge::Path::extname("/a/wat.jpg"); // -> .jpg
+   *    edge::Path::extname("lolwat.");    // -> .
+   *    edge::Path::extname("lolwat");     // ->
    *
    * @param {std::string} path - The path to extract the file extension from
    * @returns {std::string}    - The extracted file extension from the path

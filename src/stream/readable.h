@@ -1,13 +1,13 @@
-#ifndef NODE_STREAM_PIPE_H_
-#define NODE_STREAM_PIPE_H_ 1
+#ifndef EDGE_STREAM_PIPE_H_
+#define EDGE_STREAM_PIPE_H_ 1
 
 #include <vector>
 
 #include "eventemitter.h"
 
-namespace node {
+namespace edge {
 namespace stream {
-class Readable : public node::EventEmitter {
+class Readable : public edge::EventEmitter {
 public:
 
   /**
@@ -16,6 +16,12 @@ public:
    * will buffer the data until the stream is unpaused
    */
   Readable();
+
+  /**
+   * This is the virtual destructor that is required for disambiguation
+   * of destructioin on iherited objects
+   */
+  virtual ~Readable();
 
   /**
    * This function pauses the underlying stream so that received data will
@@ -40,10 +46,10 @@ public:
    * stream
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  socket.connect(8080, [&]() {
-   *    socket.pipe(&node::process::stdout);
+   *    socket.pipe(&edge::process::stdout);
    *  });
    *  loop->run();
    *
@@ -67,10 +73,10 @@ public:
    * writable stream.
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  socket.connect(8080, [&]() {
-   *    socket.pipe(node::process::stdout);
+   *    socket.pipe(edge::process::stdout);
    *  });
    *  loop->run();
    *

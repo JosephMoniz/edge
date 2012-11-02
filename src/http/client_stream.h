@@ -1,5 +1,5 @@
-#ifndef NODE_HTTP_CLIENTSTREAM_H_
-#define NODE_HTTP_CLIENTSTREAM_H_ 1
+#ifndef EDGE_HTTP_CLIENTSTREAM_H_
+#define EDGE_HTTP_CLIENTSTREAM_H_ 1
 
 #include <functional>
 #include <string>
@@ -13,27 +13,27 @@
 #include "server.h"
 #include "net.h"
 
-namespace node {
+namespace edge {
 namespace http {
 
 class Server;
 
-class ClientStream : public node::stream::Readable,
-                     public node::stream::Writable {
+class ClientStream : public edge::stream::Readable,
+                     public edge::stream::Writable {
 
-friend node::http::Server;
+friend edge::http::Server;
 
 public:
 
   /**
-   * Import the overloaded write methods from node::stream::Writable
+   * Import the overloaded write methods from edge::stream::Writable
    */
-  using node::stream::Writable::write;
+  using edge::stream::Writable::write;
 
   /**
-   * Import the overloaded end methods from node::stream::Writable
+   * Import the overloaded end methods from edge::stream::Writable
    */
-  using node::stream::Writable::end;
+  using edge::stream::Writable::end;
 
   /**
    *
@@ -78,7 +78,7 @@ public:
    * Typical constructor, sets up some initial state and gets the
    * ball rolling
    */
-  ClientStream(node::http::Server* server, node::net::Socket* socket);
+  ClientStream(edge::http::Server* server, edge::net::Socket* socket);
 
   /**
    *
@@ -195,12 +195,12 @@ private:
   /**
    *
    */
-  node::http::Server* _server;
+  edge::http::Server* _server;
 
   /**
    *
    */
-  node::net::Socket* _socket;
+  edge::net::Socket* _socket;
 
   /**
    *

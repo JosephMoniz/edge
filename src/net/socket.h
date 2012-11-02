@@ -1,5 +1,5 @@
-#ifndef NODE_SOCKET_SERVER_H_
-#define NODE_SOCKET_SERVER_H_ 1
+#ifndef EDGE_SOCKET_SERVER_H_
+#define EDGE_SOCKET_SERVER_H_ 1
 
 #include <functional>
 
@@ -9,7 +9,7 @@
 #include "stream/writable.h"
 #include "server.h"
 
-namespace node {
+namespace edge {
 namespace net {
 
 class Socket;
@@ -23,24 +23,24 @@ typedef struct SocketWriterData_s {
 typedef struct SocketConnectorData_s {
   uv_connect_t connector;
   std::function<void(void)> f;
-  node::net::Socket* self;
+  edge::net::Socket* self;
 } SocketConnectorData_t;
 
-class Socket : public node::stream::Readable, public node::stream::Writable {
+class Socket : public edge::stream::Readable, public edge::stream::Writable {
 
-friend node::net::Server;
+friend edge::net::Server;
 
 public:
 
   /**
-   * Import the overloaded write methods from node::stream::Writable
+   * Import the overloaded write methods from edge::stream::Writable
    */
-  using node::stream::Writable::write;
+  using edge::stream::Writable::write;
 
   /**
-   * Import the overloaded end methods from node::stream::Writable
+   * Import the overloaded end methods from edge::stream::Writable
    */
-  using node::stream::Writable::end;
+  using edge::stream::Writable::end;
 
   /**
    * This is a really simple constructor that just initializes
@@ -59,8 +59,8 @@ public:
    * on the same machine
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  socket.connect(8080);
    *  loop->run();
    *
@@ -75,10 +75,10 @@ public:
    * the callback is executed
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  socket.connect(8080, [&]() {
-   *    node::process::stdin.pipe(socket).pipe(node::process::stdout);
+   *    edge::process::stdin.pipe(socket).pipe(edge::process::stdout);
    *  });
    *  loop->run();
    *
@@ -93,8 +93,8 @@ public:
    * specified host
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  socket.connect(8080, "192.168.1.12");
    *  loop->run();
    *
@@ -109,10 +109,10 @@ public:
    * callback is executed
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  socket.connect(8080, "192.168.1.12", [&]() {
-   *    node::process::stdin.pipe(socket).pipe(node::process::stdout);
+   *    edge::process::stdin.pipe(socket).pipe(edge::process::stdout);
    *  });
    *  loop->run();
    *
@@ -132,8 +132,8 @@ public:
    * This function writes a uv_buf_t to the underlying TCP stream
    *
    * EXAMPLE:
-   *  auto loop    = node::Loop::getDefault();
-   *  auto socket  = node::net::Socket();
+   *  auto loop    = edge::Loop::getDefault();
+   *  auto socket  = edge::net::Socket();
    *  uv_buf_t buf = { .base = "hi", .len = 2 };
    *  socket.connect(8080, [&]() {
    *    socket.write(&buf);
@@ -150,8 +150,8 @@ public:
    * an 'end' event on completion
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  socket.connect(8080, [&]() {
    *    socket.end();
    *  });
@@ -176,10 +176,10 @@ public:
    * stream. Boolean true enables is and boolean false disables it.
    *
    * EXAMPLE:
-   *  auto loop   = node::Loop::getDefault();
-   *  auto socket = node::net::Socket();
+   *  auto loop   = edge::Loop::getDefault();
+   *  auto socket = edge::net::Socket();
    *  socket.connect(8080, [&]() {
-   *    socket.pipe(node::process::stdout);
+   *    socket.pipe(edge::process::stdout);
    *  });
    *  socket.setNoDelay(true);
    *  loop->run();
