@@ -21,6 +21,36 @@ int main(int argc, char **argv) {
 }
 ```
 
+TCP echo server:
+```c++
+int main(int argc, char **argv) {
+  auto loop = edge::Loop::getDefault();
+
+  auto server = edge::net::createServer([](edge::net::Socket* socket) {
+    socket->pipe(socket);
+  });
+  server->listen(8000);
+
+  loop->run();
+  return 0;
+}
+```
+
+TCP telnet clone (stdin -> socket -> stdout):
+```c++
+int main(int argc, char **argv) {
+  auto loop   = edge::Loop::getDefault();
+  auto socket = edge::net::Socket();
+
+  socket.connect(8000, [&]() {
+    edge::process::stdin.pipe(socket).pipe(edge::process::stdout);
+    edge::process::stdin.resume();
+  });
+
+  loop->run();
+}
+```
+
 HTTP server w/ chunked encoding
 ```c++
 int main(int argc, char **argv) {
@@ -50,33 +80,26 @@ int main(int argc, char **argv) {
 }
 ```
 
-TCP echo server:
+DNS resolution:
 ```c++
 int main(int argc, char **argv) {
   auto loop = edge::Loop::getDefault();
 
-  auto server = edge::net::createServer([](edge::net::Socket* socket) {
-    socket->pipe(socket);
-  });
-  server->listen(8000);
+  edge::dns::resolve(
+    "www.google.com",
+    [](edge::SharedError error, edge::dns::SharedResponse response) {
+      if (error != nullptr) {
+        std::cout << error->getMessage() << std::endl;
+        return;
+      }
+      for (auto ip : *response) {
+        std::cout << ip << std::endl;
+      }
+    }
+  );
 
   loop->run();
   return 0;
-}
-```
-
-TCP telnet clone (stdin -> socket -> stdout):
-```c++
-int main(int argc, char **argv) {
-  auto loop   = edge::Loop::getDefault();
-  auto socket = edge::net::Socket();
-
-  socket.connect(8000, [&]() {
-    edge::process::stdin.pipe(socket).pipe(edge::process::stdout);
-    edge::process::stdin.resume();
-  });
-
-  loop->run();
 }
 ```
 

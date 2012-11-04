@@ -30,10 +30,12 @@ OBJ = $(BUILDDIR)/path.o               \
       $(BUILDDIR)/eventemitter.o       \
       $(BUILDDIR)/querystring.o        \
       $(BUILDDIR)/url.o                \
+      $(BUILDDIR)/error.o              \
       $(BUILDDIR)/loop.o               \
       $(BUILDDIR)/timers.o             \
       $(BUILDDIR)/stream/readable.o    \
       $(BUILDDIR)/stream/writable.o    \
+      $(BUILDDIR)/dns.o                \
       $(BUILDDIR)/net.o                \
       $(BUILDDIR)/net/socket.o         \
       $(BUILDDIR)/net/server.o         \

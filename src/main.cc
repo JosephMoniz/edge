@@ -15,6 +15,7 @@
 #include "url.h"
 #include "eventemitter.h"
 #include "querystring.h"
+#include "dns.h"
 #include "net.h"
 #include "http/server.h"
 #include "http/client_stream.h"
@@ -23,6 +24,19 @@
 
 int main(int argc, char **argv) {
   auto loop = edge::Loop::getDefault();
+
+  edge::dns::resolve(
+    "www.google.com",
+    [](edge::SharedError error, edge::dns::SharedResponse response) {
+      if (error != nullptr) {
+        std::cout << error->getMessage() << std::endl;
+        return;
+      }
+      for (auto ip : *response) {
+        std::cout << ip << std::endl;
+      }
+    }
+  );
 
   auto web = edge::http::Server([](edge::http::ClientStream* stream) {
     stream->setHeader("Content-Type", "text/plain");
