@@ -78,7 +78,7 @@ public:
    * Typical constructor, sets up some initial state and gets the
    * ball rolling
    */
-  ClientStream(edge::http::Server* server, edge::net::Socket* socket);
+  ClientStream(edge::http::Server* server, edge::net::SharedSocket socket);
 
   /**
    *
@@ -200,7 +200,7 @@ private:
   /**
    *
    */
-  edge::net::Socket* _socket;
+  edge::net::SharedSocket _socket;
 
   /**
    *

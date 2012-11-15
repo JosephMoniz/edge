@@ -1,20 +1,18 @@
+#include "net/server.h"
 #include "server.h"
 #include "client_stream.h"
 
-edge::http::Server::Server() {
-  this->_cb = nullptr;
-  this->_server.on("connection", [=](void* data) {
-    edge::http::Server::_onSocketConnection(this, data);
-  });
-  this->on("connection", edge::http::Server::_onConnection);
-}
-
-edge::http::Server::Server(std::function<void(edge::http::ClientStream*)> cb) {
+edge::http::Server::Server(edge::http::ServerConnectionCb cb) :
+  _server([=](edge::net::SharedSocket socket) {
+    auto stream = std::make_shared<edge::http::ClientStream>(this, socket);
+    socket->once("connection", [=](void* data) {
+      if (this->_cb != nullptr) {
+        this->_cb(stream);
+      }
+    });
+    stream->once("close", [stream](void* data) { });
+  }) {
   this->_cb = cb;
-  this->_server.on("connection", [=](void* data) {
-    edge::http::Server::_onSocketConnection(this, data);
-  });
-  this->on("connection", edge::http::Server::_onConnection);
 }
 
 bool edge::http::Server::listen(int port) {
@@ -49,20 +47,4 @@ void edge::http::Server::close() {
 
 void edge::http::Server::close(std::function<void()> cb) {
   this->_server.close(cb);
-}
-
-
-void edge::http::Server::_onSocketConnection(edge::http::Server* self,
-                                             void *data) {
-  auto socket = static_cast<edge::net::Socket*>(data);
-  new edge::http::ClientStream(self, socket);
-}
-
-void edge::http::Server::_onConnection(void *data) {
-  auto stream = (edge::http::ClientStream*) data;
-  auto self   = (edge::http::Server*) stream->_server;
-
-  if (self->_cb != nullptr) {
-    self->_cb(stream);
-  }
 }

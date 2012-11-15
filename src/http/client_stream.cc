@@ -6,7 +6,7 @@
 #include "client_stream.h"
 
 edge::http::ClientStream::ClientStream(edge::http::Server* server,
-                                       edge::net::Socket* socket) {
+                                       edge::net::SharedSocket socket) {
   http_parser_init(&this->_parser, HTTP_REQUEST);
   this->_parser.data     = this;
   this->_server          = server;
@@ -134,7 +134,7 @@ int edge::http::ClientStream::_onHeaderValue(http_parser* parser,
 int edge::http::ClientStream::_onHeadersComplete(http_parser* parser) {
   auto self = static_cast<edge::http::ClientStream*>(parser->data);
   self->headers[self->_fieldTmp] = self->_tmp;
-  self->_server->emit("connection", (void*)self);
+  self->_socket->emit("connection", nullptr);
   return 0;
 }
 

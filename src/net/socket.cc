@@ -1,5 +1,5 @@
-#include <iostream>
 #include <string.h>
+#include <iostream>
 
 #include "loop.h"
 #include "net/socket.h"
@@ -7,6 +7,7 @@
 edge::net::Socket::Socket() {
   uv_tcp_init(edge::Loop::getDefault()->getUVLoop(), &this->_handle);
   this->_handle.data = this;
+  this->_isClosed = true;
 }
 
 edge::net::Socket::~Socket() {
@@ -55,7 +56,10 @@ void edge::net::Socket::write(uv_buf_t* buf) {
 }
 
 void edge::net::Socket::end() {
-  uv_close((uv_handle_t*)&this->_handle, edge::net::Socket::_closeCb);
+  if (!this->_isClosed) {
+    this->_isClosed = true;
+    uv_close((uv_handle_t*)&this->_handle, edge::net::Socket::_closeCb);
+  }
 }
 
 void edge::net::Socket::setTimeout(int timeout) {
@@ -80,11 +84,14 @@ void edge::net::Socket::setKeepAlive(bool enabled, int initialDelay) {
 
 void edge::net::Socket::_connectCb(uv_connect_t* req, int status) {
   auto data = (SocketConnectorData_t*) req;
+  auto self = data->self;
+
+  self->_isClosed = false;
 
   if (data->f != nullptr) {
     data->f();
   }
-  data->self->_startRead();
+  self->_startRead();
 }
 
 void edge::net::Socket::_writeCb(uv_write_t* req, int status) {
@@ -101,11 +108,12 @@ void edge::net::Socket::_readCb(uv_stream_t* stream, ssize_t nread,
   auto self = static_cast<edge::net::Socket*>(stream->data);
 
   if (nread > 0) {
+    buf.len = nread;
     self->emit("__data", static_cast<void*>(&buf));
   } else {
     uv_err_t error = uv_last_error(edge::Loop::getDefault()->getUVLoop());
     if (error.code == UV_EOF) {
-      uv_close((uv_handle_t*)stream, edge::net::Socket::_closeCb);
+      self->end();
     } else {
       self->emit("error", nullptr);
     }
@@ -122,6 +130,7 @@ void edge::net::Socket::_closeCb(uv_handle_t* req) {
 bool edge::net::Socket::_accept(uv_stream_t* handle) {
   int res;
   res = uv_accept(handle, (uv_stream_t*) &this->_handle);
+  this->_isClosed = false;
   return !res;
 }
 

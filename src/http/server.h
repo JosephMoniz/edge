@@ -2,6 +2,7 @@
 #define EDGE_HTTP_SERVER_H_ 1
 
 #include <functional>
+#include <memory>
 
 #include "uv.h"
 
@@ -14,17 +15,20 @@ namespace http {
 
 class ClientStream;
 
+typedef std::shared_ptr<ClientStream> SharedClientStream;
+typedef std::function<void(edge::http::SharedClientStream)> ServerConnectionCb;
+
 class Server : public EventEmitter {
 public:
   /**
    *
    */
-  Server();
+  Server() : Server(nullptr) {};
 
   /**
    *
    */
-  Server(std::function<void(edge::http::ClientStream*)> cb);
+  Server(ServerConnectionCb cb);
 
   /**
    *
@@ -76,17 +80,8 @@ private:
   /**
    *
    */
-  std::function<void(edge::http::ClientStream*)> _cb;
+  ServerConnectionCb _cb;
 
-  /**
-   *
-   */
-  static void _onSocketConnection(edge::http::Server* self, void *data);
-
-  /**
-   *
-   */
-  static void _onConnection(void *data);
 };
 }
 }

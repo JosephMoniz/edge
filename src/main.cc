@@ -38,18 +38,16 @@ int main(int argc, char **argv) {
     }
   );
 
-  auto web = edge::http::Server([](edge::http::ClientStream* stream) {
+  auto web = edge::http::Server([](edge::http::SharedClientStream stream) {
     stream->setHeader("Content-Type", "text/plain");
     stream->end("Hello world!");
-    stream->on("close", [=](void* data) { delete stream; });
   });
   web.listen(5000);
 
-  auto server = edge::net::createServer([](edge::net::Socket* socket) {
+  auto server = edge::net::Server([](edge::net::SharedSocket socket) {
     socket->pipe(socket);
-    socket->on("close", [=](void* data) { delete socket; });
   });
-  server->listen(8000);
+  server.listen(8000);
 
   auto socket = edge::net::Socket();
   socket.connect(8000, [&]() {

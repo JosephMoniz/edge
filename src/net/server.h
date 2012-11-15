@@ -6,6 +6,7 @@
 
 #include "uv.h"
 
+#include "_types.h"
 #include "eventemitter.h"
 #include "socket.h"
 
@@ -14,7 +15,7 @@ namespace net {
 
 class Socket;
 
-typedef std::function<void(edge::net::Socket*)> ServerConnectionCb;
+typedef std::function<void(edge::net::SharedSocket)> ServerConnectionCb;
 
 class Server : public EventEmitter {
 public:

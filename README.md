@@ -10,11 +10,11 @@ HTTP Server:
 int main(int argc, char **argv) {
   auto loop = edge::Loop::getDefault();
 
-  auto server = edge::http::Server([](edge::http::ClientStream* stream) {
+  auto server = edge::http::Server([](edge::http::SharedClientStream stream) {
     stream->setHeader("Content-Type", "text/plain");
     stream->end("Hello world!");
   });
-  server.listen(80);
+  server.listen(5000);
 
   loop->run();
   return 0;
@@ -26,10 +26,10 @@ TCP echo server:
 int main(int argc, char **argv) {
   auto loop = edge::Loop::getDefault();
 
-  auto server = edge::net::createServer([](edge::net::Socket* socket) {
+  auto server = edge::net::Server([](edge::net::SharedSocket socket) {
     socket->pipe(socket);
   });
-  server->listen(8000);
+  server.listen(8000);
 
   loop->run();
   return 0;
@@ -56,7 +56,7 @@ HTTP server w/ chunked encoding
 int main(int argc, char **argv) {
   auto loop = edge::Loop::getDefault();
 
-  auto server = edge::http::Server([](edge::http::ClientStream* stream) {
+  auto server = edge::http::Server([](edge::http::SharedClientStream stream) {
     stream->setHeader("Content-Type", "text/html");
     stream->write(
       "<html>"

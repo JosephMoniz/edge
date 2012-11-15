@@ -1,6 +1,7 @@
 #ifndef EDGE_STREAM_PIPE_H_
 #define EDGE_STREAM_PIPE_H_ 1
 
+#include <memory>
 #include <vector>
 
 #include "eventemitter.h"
@@ -57,7 +58,7 @@ public:
    * @returns {WritableStream*}    - The destination stream passed in
    */
   template <class WritableStream>
-  WritableStream* pipe(WritableStream* dest) {
+  auto pipe(WritableStream* dest) -> decltype(dest) {
     this->on("data", [dest](void *data) {
       dest->write((uv_buf_t*) data);
     });
@@ -84,8 +85,28 @@ public:
    * @returns {WritableStream&}    - The destination stream passed in
    */
   template <class WritableStream>
-  WritableStream& pipe(WritableStream& dest) {
+  auto pipe(WritableStream& dest) -> decltype(dest) {
     this->pipe(&dest);
+    return dest;
+  };
+
+  /**
+   * This function takes a shared pointer to a writable stream and pipes all
+   * the data received by the underlying TCP socket directly to the passed in
+   * writable stream.
+   *
+   * EXAMPLE:
+   *  auto server = edge::net::createServer([](edge::net::SharedSocket socket) {
+   *   socket->pipe(socket);
+   *  });
+   *  server->listen(8000);
+   *
+   * @param {WritableStream&} dest - The writable stream to pipe to
+   * @returns {WritableStream&}    - The destination stream passed in
+   */
+  template <class WritableStream>
+  auto pipe(std::shared_ptr<WritableStream> dest) -> decltype(dest) {
+    this->pipe(*dest);
     return dest;
   };
 

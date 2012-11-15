@@ -91,7 +91,7 @@ void edge::net::Server::_onConnection(uv_stream_t* handle, int status) {
     return;
   }
 
-  auto socket = new edge::net::Socket();
+  auto socket = std::make_shared<edge::net::Socket>();
   auto result = socket->_accept(handle);
   if (!result) {
     self->emit("error", nullptr);
@@ -102,5 +102,5 @@ void edge::net::Server::_onConnection(uv_stream_t* handle, int status) {
   if (self->_cb != nullptr) {
     self->_cb(socket);
   }
-  self->emit("connection", (void*)socket);
+  socket->once("close", [socket](void* data) {});
 }

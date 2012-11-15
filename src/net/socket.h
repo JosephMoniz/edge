@@ -2,11 +2,14 @@
 #define EDGE_SOCKET_SERVER_H_ 1
 
 #include <functional>
+#include <memory>
+#include <vector>
 
 #include "uv.h"
 
 #include "stream/readable.h"
 #include "stream/writable.h"
+#include "_types.h"
 #include "server.h"
 
 namespace edge {
@@ -214,6 +217,11 @@ private:
    * translated address of what were connected to
    */
   struct sockaddr_in _addr;
+
+  /**
+   * Boolean is closed flag
+   */
+  bool _isClosed;
 
   /**
    * This is the internal callback that gets ran when a connection
