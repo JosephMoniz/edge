@@ -1,4 +1,4 @@
-CC=/opt/local/bin/g++-mp-4.7
+CC=g++
 
 UVDIR=dep/libuv
 HTTPDIR=dep/http-parser
