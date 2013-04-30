@@ -25,7 +25,9 @@ public:
    * @param {std::function<void(void*)>} - The handler to bind to the event
    * @returns {Void}
    */
-  void on(std::string event, std::function<void(void*)> handler);
+    void on(std::string event, std::function<void(void*)> handler) {
+      this->_events[event].push_back(handler);
+    }
 
   /**
    * This function bind the supplied `handler()` function to the supplied
@@ -45,7 +47,9 @@ public:
    * @param {std::function<void(void*)>} - The handler to bind to the event
    * @returns {Void}
    */
-  void once(std::string event, std::function<void(void*)> handler);
+  void once(std::string event, std::function<void(void*)> handler) {
+    this->_once[event].push_back(handler);
+  }
 
   /**
    * This function removes all binded handlers for all events of the
@@ -60,7 +64,10 @@ public:
    *
    * @returns {Void}
    */
-  void removeAllListeners();
+  void removeAllListeners() {
+    this->_events.clear();
+    this->_once.clear();
+  }
 
   /**
    * This function removes all handlers that are bound to the supplied
@@ -78,7 +85,10 @@ public:
    * @param {std::string} event - The event to remove all handlers from
    * @returns {Void}
    */
-  void removeAllListeners(std::string event);
+  void removeAllListeners(std::string event) {
+    this->_events[event].clear();
+    this->_once[event].clear();
+  }
 
   /**
    * This function executes all handlers bound to the supplied `event` and
@@ -93,7 +103,17 @@ public:
    * @param {void *}            - The data pointer to pass to all handlers
    * @returns {Void}
    */
-  void emit(std::string event, void *data);
+  void emit(std::string event, void *data) {
+    auto handlers = this->_events[event];
+    for (auto &handler : handlers) {
+      handler(data);
+    }
+    auto oneTimers = this->_once[event];
+    for (auto &oneTimer : oneTimers) {
+      oneTimer(data);
+    }
+    this->_once.erase(event);
+  }
 
 private:
   std::map<std::string, std::vector<std::function<void(void*)>>> _events;

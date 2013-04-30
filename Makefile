@@ -27,7 +27,6 @@ INCLUDES = -I$(UVDIR)/include   \
            -I$(SRCDIR)
 
 OBJ = $(BUILDDIR)/path.o               \
-      $(BUILDDIR)/eventemitter.o       \
       $(BUILDDIR)/querystring.o        \
       $(BUILDDIR)/url.o                \
       $(BUILDDIR)/error.o              \
