@@ -17,17 +17,19 @@ uv_buf_t edge::process::StdinClass::_allocCb(uv_handle_t* handle,
   return uv_buf_init(new char[suggested_size], suggested_size);
 }
 
-void edge::process::StdinClass::_readCb(uv_stream_t* stream, ssize_t nread,
-                                        uv_buf_t buf) {
+void edge::process::StdinClass::_readCb(uv_stream_t* stream,
+                                        ssize_t nread,
+                                        uv_buf_t buf)
+{
   edge::process::StdinClass* self = (edge::process::StdinClass*) stream->data;
   if (nread > 0) {
-    self->emit("__data", (void*)&buf);
+    self->emit("__data", buf);
   } else {
     uv_err_t error = uv_last_error(edge::Loop::getDefault()->getUVLoop());
     if (error.code == UV_EOF) {
       uv_close((uv_handle_t*)stream, edge::process::StdinClass::_closeCb);
     } else {
-      self->emit("error", nullptr);
+      self->emit("error", buf);
     }
   }
   delete buf.base;
@@ -35,7 +37,8 @@ void edge::process::StdinClass::_readCb(uv_stream_t* stream, ssize_t nread,
 
 void edge::process::StdinClass::_closeCb(uv_handle_t* req) {
   edge::process::StdinClass* self = (edge::process::StdinClass*) req->data;
-  self->emit("end", nullptr);
+  uv_buf_t data;
+  self->emit("end", data);
 }
 
 

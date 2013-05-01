@@ -7,6 +7,7 @@
 #include <functional>
 
 namespace edge {
+template <class T>
 class EventEmitter {
 public:
 
@@ -25,7 +26,7 @@ public:
    * @param {std::function<void(void*)>} - The handler to bind to the event
    * @returns {Void}
    */
-    void on(std::string event, std::function<void(void*)> handler) {
+    void on(std::string event, std::function<void(T)> handler) {
       this->_events[event].push_back(handler);
     }
 
@@ -47,7 +48,7 @@ public:
    * @param {std::function<void(void*)>} - The handler to bind to the event
    * @returns {Void}
    */
-  void once(std::string event, std::function<void(void*)> handler) {
+  void once(std::string event, std::function<void(T)> handler) {
     this->_once[event].push_back(handler);
   }
 
@@ -103,7 +104,7 @@ public:
    * @param {void *}            - The data pointer to pass to all handlers
    * @returns {Void}
    */
-  void emit(std::string event, void *data) {
+  void emit(std::string event, T data) {
     auto handlers = this->_events[event];
     for (auto &handler : handlers) {
       handler(data);
@@ -116,8 +117,8 @@ public:
   }
 
 private:
-  std::map<std::string, std::vector<std::function<void(void*)>>> _events;
-  std::map<std::string, std::vector<std::function<void(void*)>>> _once;
+  std::map<std::string, std::vector<std::function<void(T)>>> _events;
+  std::map<std::string, std::vector<std::function<void(T)>>> _once;
 };
 }
 

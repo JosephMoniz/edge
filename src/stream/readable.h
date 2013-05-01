@@ -1,14 +1,18 @@
-#ifndef EDGE_STREAM_PIPE_H_
-#define EDGE_STREAM_PIPE_H_ 1
+#ifndef EDGE_STREAM_READABLE_H_
+#define EDGE_STREAM_READABLE_H_ 1
 
 #include <memory>
 #include <vector>
+#include <functional>
+
+#include "uv.h"
 
 #include "eventemitter.h"
 
 namespace edge {
 namespace stream {
-class Readable : public edge::EventEmitter {
+template <class T>
+class Readable : public edge::EventEmitter<T> {
 public:
 
   /**
@@ -16,13 +20,20 @@ public:
    * proxy data to a `data` event if the stream is unpaused otherwise it
    * will buffer the data until the stream is unpaused
    */
-  Readable();
+  Readable() {
+    this->_isPaused = false;
+    this->on("__data", [=](T data) {
+      this->emit("data", data);
+    });
+}
 
   /**
    * This is the virtual destructor that is required for disambiguation
    * of destructioin on iherited objects
    */
-  virtual ~Readable();
+  virtual ~Readable() {
+    // required evil
+  }
 
   /**
    * This function pauses the underlying stream so that received data will
@@ -30,7 +41,9 @@ public:
    *
    * @returns {void}
    */
-  void pause();
+  void pause() {
+    this->_isPaused = true;
+  }
 
   /**
    * This function resumes a paused stream and emits all the buffered data
@@ -39,7 +52,17 @@ public:
    *
    * @returns {void}
    */
-  void resume();
+  void resume() {
+    this->_isPaused = false;
+    if (this->_buffer.size()) {
+      auto buf = uv_buf_init(
+        (char*)&(*(this->_buffer.begin())),
+        this->_buffer.size()
+      );
+      this->emit("data", buf);
+      this->_buffer.clear();
+    }
+  }
 
   /**
    * This function takes a pointer to a writable stream and pipes all the data
@@ -59,10 +82,10 @@ public:
    */
   template <class WritableStream>
   auto pipe(WritableStream* dest) -> decltype(dest) {
-    this->on("data", [dest](void *data) {
-      dest->write((uv_buf_t*) data);
+    this->on("data", [dest](T data) {
+      dest->write(data);
     });
-    this->on("end", [dest](void *data) {
+    this->on("end", [dest](T data) {
       dest->end();
     });
     return dest;
@@ -109,6 +132,14 @@ public:
     this->pipe(*dest);
     return dest;
   };
+
+  /**
+   *
+   */
+  Readable<T>* subscribe(std::function<void(T)> subscriber) {
+    this->on("data", [=](T data) { subscriber(data); });
+    return this;
+  }
 
 private:
 

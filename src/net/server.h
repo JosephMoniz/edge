@@ -17,7 +17,7 @@ class Socket;
 
 typedef std::function<void(edge::net::SharedSocket)> ServerConnectionCb;
 
-class Server : public EventEmitter {
+class Server : public EventEmitter<edge::net::SharedSocket> {
 public:
   /**
    * This is a fairly basic constructor, it is responsible for setting
@@ -146,7 +146,7 @@ public:
    * @returns {bool}           - True on success false on failure
    */
   bool listen(int port, const char* host, int backlog,
-              std::function<void(void*)> cb);
+              std::function<void(edge::net::Server*)> cb);
 
   /**
    *

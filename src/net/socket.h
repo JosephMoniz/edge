@@ -29,21 +29,12 @@ typedef struct SocketConnectorData_s {
   edge::net::Socket* self;
 } SocketConnectorData_t;
 
-class Socket : public edge::stream::Readable, public edge::stream::Writable {
+class Socket : public edge::stream::Readable<uv_buf_t>,
+               public edge::stream::Writable<uv_buf_t> {
 
 friend edge::net::Server;
 
 public:
-
-  /**
-   * Import the overloaded write methods from edge::stream::Writable
-   */
-  using edge::stream::Writable::write;
-
-  /**
-   * Import the overloaded end methods from edge::stream::Writable
-   */
-  using edge::stream::Writable::end;
 
   /**
    * This is a really simple constructor that just initializes
@@ -146,7 +137,7 @@ public:
    * @param {uv_buf_t*} buf - The uv_buf_t to write
    * @returns {void}
    */
-  virtual void write(uv_buf_t* buf);
+  void write(uv_buf_t buf);
 
   /**
    * This function closes the underlying TCP stream and emits

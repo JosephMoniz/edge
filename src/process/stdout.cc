@@ -8,12 +8,12 @@ edge::process::StdoutClass::StdoutClass() {
   this->_handle.data = this;
 }
 
-void edge::process::StdoutClass::write(uv_buf_t* buf) {
+void edge::process::StdoutClass::write(uv_buf_t buf) {
   uv_write_t* writer = new uv_write_t;
   uv_write(
     writer,
     (uv_stream_t*)&this->_handle,
-    buf,
+    &buf,
     1,
     edge::process::StdoutClass::_writeCb
   );
@@ -29,7 +29,8 @@ void edge::process::StdoutClass::_writeCb(uv_write_t* req, int status) {
 
 void edge::process::StdoutClass::_closeCb(uv_handle_t* req) {
   edge::process::StdoutClass* self = (edge::process::StdoutClass*) req->data;
-  self->emit("end", nullptr);
+  uv_buf_t buf = { .base = nullptr, .len = 0 };
+  self->emit("end", buf);
 }
 
 edge::process::StdoutClass edge::process::stdout;

@@ -10,18 +10,9 @@
 
 namespace edge {
 namespace process {
-class StdoutClass : public EventEmitter, public edge::stream::Writable {
+class StdoutClass : public edge::EventEmitter<uv_buf_t>,
+                    public edge::stream::Writable<uv_buf_t> {
 public:
-
-  /**
-   * Import the overloaded write methods from edge::stream::Writable
-   */
-  using edge::stream::Writable::write;
-
-  /**
-   * Import the overloaded end methods from edge::stream::Writable
-   */
-  using edge::stream::Writable::end;
 
   /**
    * This is a basic constructor responsible for setting up the intitial
@@ -35,7 +26,7 @@ public:
    * @param {uv_buf_t*} buf - The buffer to write to the stream
    * @returns {void}
    */
-  void write(uv_buf_t* buf);
+  void write(uv_buf_t buf);
 
   /**
    * This function ends the stream and emits an `end` event when complete

@@ -18,22 +18,12 @@ namespace http {
 
 class Server;
 
-class ClientStream : public edge::stream::Readable,
-                     public edge::stream::Writable {
+class ClientStream : public edge::stream::Readable<uv_buf_t>,
+                     public edge::stream::Writable<uv_buf_t> {
 
 friend edge::http::Server;
 
 public:
-
-  /**
-   * Import the overloaded write methods from edge::stream::Writable
-   */
-  using edge::stream::Writable::write;
-
-  /**
-   * Import the overloaded end methods from edge::stream::Writable
-   */
-  using edge::stream::Writable::end;
 
   /**
    *
@@ -78,7 +68,9 @@ public:
    * Typical constructor, sets up some initial state and gets the
    * ball rolling
    */
-  ClientStream(edge::http::Server* server, edge::net::SharedSocket socket);
+  ClientStream(edge::http::Server* server,
+               edge::net::SharedSocket socket);
+
 
   /**
    *
@@ -143,7 +135,17 @@ public:
    * @param {uv_buf_t*} buf - The data to write to the stream
    * @returns {void}
    */
-  void write(uv_buf_t* buf);
+  void write(uv_buf_t buf);
+
+  /**
+   *
+   */
+  void write(const char* buf);
+
+  /**
+   *
+   */
+  void write(const std::string& buf);
 
   /**
    * This function closes the underlying tcp stream. If HTTP headers have
@@ -153,6 +155,16 @@ public:
    * @returns {void}
    */
   void end();
+
+  /**
+   *
+   */
+  void end(const char* buf);
+
+  /**
+   *
+   */
+  void end(const std::string& buf);
 
   /**
    * This callback is ran every time we begin parsing a new HTTP request
@@ -205,6 +217,11 @@ private:
   /**
    *
    */
+  std::function<void(void)> _cb;
+
+  /**
+   *
+   */
   std::map<std::string, std::string> _headers;
 
   /**
@@ -236,6 +253,11 @@ private:
    *
    */
   http_parser _parser;
+
+  /**
+   *
+   */
+  void _addCb(std::function<void(void)> cb);
 
 };
 

@@ -11,17 +11,16 @@ edge::http::ClientStream::ClientStream(edge::http::Server* server,
   this->_parser.data     = this;
   this->_server          = server;
   this->_socket          = socket;
-  socket->on("data", [=](void* data) {
-    auto buf  = (uv_buf_t*) data;
+  socket->on("data", [=](uv_buf_t data) {
     http_parser_execute(
       &this->_parser,
       &edge::http::_settings,
-      buf->base,
-      buf->len
+      data.base,
+      data.len
     );
   });
-  socket->on("close", [=](void* data) {
-      this->emit("close", nullptr);
+  socket->on("close", [=](uv_buf_t data) {
+      this->emit("close", data);
   });
 }
 
@@ -47,7 +46,8 @@ void edge::http::ClientStream::writeHead(int statusCode, const char* reason) {
   }
   ss << "\r\n";
   auto str = ss.str();
-  this->_socket->write((void*)str.c_str(), str.length());
+  uv_buf_t heading = { .base = (char*)str.c_str(), .len = str.length() };
+  this->_socket->write(heading);
   this->_headersWritten = true;
 }
 
@@ -71,22 +71,46 @@ void edge::http::ClientStream::removeHeader(const char* name) {
   }
 }
 
-void edge::http::ClientStream::write(uv_buf_t* buf) {
+void edge::http::ClientStream::write(uv_buf_t buf) {
   if (!this->_headersWritten) {
     this->writeHead(200, "OK");
   }
   std::stringstream ss(std::stringstream::in | std::stringstream::out);
-  ss << std::hex << buf->len << "\r\n";
+  ss << std::hex << buf.len << "\r\n";
   auto str = ss.str();
-  this->_socket->write((void*)str.c_str(), str.length());
+  uv_buf_t chunk_size = { .base = (char*)str.c_str(), .len = str.length() };
+  uv_buf_t ending     = { .base = (char*)"\r\n", .len = 2 };
+  this->_socket->write(chunk_size);
   this->_socket->write(buf);
-  this->_socket->write((void*)"\r\n", 2);
+  this->_socket->write(ending);
+}
+
+void edge::http::ClientStream::write(const char* buf) {
+  uv_buf_t data = { .base = (char*)buf, .len = strlen(buf) };
+  this->write(data);
+}
+
+void edge::http::ClientStream::write(const std::string& buf) {
+  uv_buf_t data = { .base = (char*)buf.c_str(), .len = buf.length() };
+  this->write(data);
 }
 
 void edge::http::ClientStream::end() {
   if (this->_isChunkedEncoding) {
-    this->_socket->end((void*)"0\r\n\r\n", 5);
+    uv_buf_t ending = { .base = (char*)"0\r\n\r\n", .len = 5 };
+    this->_socket->write(ending);
+    this->_socket->end();
   }
+}
+
+void edge::http::ClientStream::end(const char* buf) {
+  this->write(buf);
+  this->end();
+}
+
+void edge::http::ClientStream::end(const std::string& buf) {
+  this->write(buf);
+  this->end();
 }
 
 int edge::http::ClientStream::_onMessageBegin(http_parser* parser) {
@@ -134,7 +158,7 @@ int edge::http::ClientStream::_onHeaderValue(http_parser* parser,
 int edge::http::ClientStream::_onHeadersComplete(http_parser* parser) {
   auto self = static_cast<edge::http::ClientStream*>(parser->data);
   self->headers[self->_fieldTmp] = self->_tmp;
-  self->_socket->emit("connection", nullptr);
+  self->_cb();
   return 0;
 }
 
@@ -142,14 +166,19 @@ int edge::http::ClientStream::_onBody(http_parser* parser, const char* at,
                                       size_t length) {
   auto self    = static_cast<edge::http::ClientStream*>(parser->data);
   uv_buf_t buf = { .base = (char*)at, .len = length };
-  self->emit("__data", (void*)&buf);
+  self->emit("__data", buf);
   return 0;
 }
 
 int edge::http::ClientStream::_onMessageComplete(http_parser* parser) {
-  auto self    = static_cast<edge::http::ClientStream*>(parser->data);
-  self->emit("end", nullptr);
+  auto self = static_cast<edge::http::ClientStream*>(parser->data);
+  uv_buf_t buf;
+  self->emit("end", buf);
   return 0;
+}
+
+void edge::http::ClientStream::_addCb(std::function<void(void)> cb) {
+  this->_cb = cb;
 }
 
 http_parser_settings edge::http::_settings = {

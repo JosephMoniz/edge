@@ -1,5 +1,4 @@
 #include <string.h>
-#include <iostream>
 
 #include "loop.h"
 #include "net/socket.h"
@@ -44,12 +43,12 @@ int edge::net::Socket::getBufferSize() {
   return 0;
 }
 
-void edge::net::Socket::write(uv_buf_t* buf) {
+void edge::net::Socket::write(uv_buf_t buf) {
   auto container = new edge::net::SocketWriterData_t;
   uv_write(
     &container->writer,
     (uv_stream_t*)&this->_handle,
-    buf,
+    &buf,
     1,
     edge::net::Socket::_writeCb
   );
@@ -103,19 +102,21 @@ uv_buf_t edge::net::Socket::_allocCb(uv_handle_t* handle,
   return uv_buf_init(new char[suggested_size], suggested_size);
 }
 
-void edge::net::Socket::_readCb(uv_stream_t* stream, ssize_t nread,
-                                uv_buf_t buf) {
+void edge::net::Socket::_readCb(uv_stream_t* stream,
+                                ssize_t nread,
+                                uv_buf_t buf)
+{
   auto self = static_cast<edge::net::Socket*>(stream->data);
 
   if (nread > 0) {
     buf.len = nread;
-    self->emit("__data", static_cast<void*>(&buf));
+    self->emit("__data", buf);
   } else {
     uv_err_t error = uv_last_error(edge::Loop::getDefault()->getUVLoop());
     if (error.code == UV_EOF) {
       self->end();
     } else {
-      self->emit("error", nullptr);
+      self->emit("error", buf);
     }
   }
   delete buf.base;
@@ -123,8 +124,9 @@ void edge::net::Socket::_readCb(uv_stream_t* stream, ssize_t nread,
 
 void edge::net::Socket::_closeCb(uv_handle_t* req) {
   auto self = static_cast<edge::net::Socket*>(req->data);
-  self->emit("end", nullptr);
-  self->emit("close", nullptr);
+  uv_buf_t buf;
+  self->emit("end", buf);
+  self->emit("close", buf);
 }
 
 bool edge::net::Socket::_accept(uv_stream_t* handle) {

@@ -32,8 +32,6 @@ OBJ = $(BUILDDIR)/path.o               \
       $(BUILDDIR)/error.o              \
       $(BUILDDIR)/loop.o               \
       $(BUILDDIR)/timers.o             \
-      $(BUILDDIR)/stream/readable.o    \
-      $(BUILDDIR)/stream/writable.o    \
       $(BUILDDIR)/dns.o                \
       $(BUILDDIR)/net.o                \
       $(BUILDDIR)/net/socket.o         \

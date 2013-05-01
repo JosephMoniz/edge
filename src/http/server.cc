@@ -4,15 +4,16 @@
 
 edge::http::Server::Server(edge::http::ServerConnectionCb cb) :
   _server([=](edge::net::SharedSocket socket) {
-    auto stream = std::make_shared<edge::http::ClientStream>(this, socket);
-    socket->once("connection", [=](void* data) {
-      if (this->_cb != nullptr) {
-        this->_cb(stream);
-      }
-    });
-    stream->once("close", [stream](void* data) { });
+    SharedClientStream stream = std::make_shared<edge::http::ClientStream>(
+      this,
+      socket
+    );
+    stream->_addCb([=]() { this->emit("__data", stream); });
+    stream->once("close", [stream](uv_buf_t data) { });
   }) {
-  this->_cb = cb;
+  if (cb != nullptr) {
+    this->on("data", cb);
+  }
 }
 
 bool edge::http::Server::listen(int port) {

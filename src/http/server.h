@@ -6,6 +6,7 @@
 
 #include "uv.h"
 
+#include "stream/readable.h"
 #include "eventemitter.h"
 #include "client_stream.h"
 #include "net.h"
@@ -15,10 +16,10 @@ namespace http {
 
 class ClientStream;
 
-typedef std::shared_ptr<ClientStream> SharedClientStream;
+typedef std::shared_ptr<edge::http::ClientStream> SharedClientStream;
 typedef std::function<void(edge::http::SharedClientStream)> ServerConnectionCb;
 
-class Server : public EventEmitter {
+class Server : public edge::stream::Readable<SharedClientStream> {
 public:
   /**
    *
@@ -76,11 +77,6 @@ private:
    *
    */
   edge::net::Server _server;
-
-  /**
-   *
-   */
-  ServerConnectionCb _cb;
 
 };
 }

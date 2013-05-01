@@ -9,7 +9,7 @@
 
 namespace edge {
 namespace process {
-class StdinClass : public edge::stream::Readable {
+class StdinClass : public edge::stream::Readable<uv_buf_t> {
 public:
 
   /**

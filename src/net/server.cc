@@ -36,7 +36,7 @@ bool edge::net::Server::listen(int port, const char* host, int backlog) {
 }
 
 bool edge::net::Server::listen(int port, const char* host, int backlog,
-                               std::function<void(void*)> cb) {
+                               std::function<void(edge::net::Server*)> cb) {
   auto addr = uv_ip4_addr(host, port);
   int res;
 
@@ -55,10 +55,8 @@ bool edge::net::Server::listen(int port, const char* host, int backlog,
   }
 
   if (cb != nullptr) {
-    this->on("listening", cb);
+    cb(this);
   }
-
-  this->emit("listening", (void*)this);
 
   return true;
 }
@@ -102,5 +100,5 @@ void edge::net::Server::_onConnection(uv_stream_t* handle, int status) {
   if (self->_cb != nullptr) {
     self->_cb(socket);
   }
-  socket->once("close", [socket](void* data) {});
+  socket->once("close", [socket](uv_buf_t data) {});
 }

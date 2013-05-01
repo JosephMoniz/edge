@@ -38,7 +38,8 @@ int main(int argc, char **argv) {
     }
   );
 
-  auto web = edge::http::Server([](edge::http::SharedClientStream stream) {
+  auto web = edge::http::Server();
+  web.subscribe([](edge::http::SharedClientStream stream) {
     stream->setHeader("Content-Type", "text/plain");
     stream->end("Hello world!");
   });
