@@ -7,7 +7,7 @@
 #include "uv.h"
 
 #include "_types.h"
-#include "eventemitter.h"
+#include "stream/readable.h"
 #include "socket.h"
 
 namespace edge {
@@ -17,7 +17,7 @@ class Socket;
 
 typedef std::function<void(edge::net::SharedSocket)> ServerConnectionCb;
 
-class Server : public EventEmitter<edge::net::SharedSocket> {
+class Server : public edge::stream::Readable<edge::net::SharedSocket> {
 public:
   /**
    * This is a fairly basic constructor, it is responsible for setting
@@ -179,11 +179,6 @@ private:
    * This is a reference to the listening socket
    */
   uv_tcp_t _handle;
-
-  /**
-   * This callback will be ran everytime a new connection is accepted
-   */
-  ServerConnectionCb _cb;
 
   /**
    * This is the callback that gets called everytime a connection

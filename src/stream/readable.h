@@ -25,7 +25,7 @@ public:
     this->on("__data", [=](T data) {
       this->emit("data", data);
     });
-}
+  }
 
   /**
    * This is the virtual destructor that is required for disambiguation

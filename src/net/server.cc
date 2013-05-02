@@ -5,13 +5,12 @@
 edge::net::Server::Server() {
   uv_tcp_init(edge::Loop::getDefault()->getUVLoop(), &this->_handle);
   this->_handle.data = this;
-  this->_cb = nullptr;
 }
 
 edge::net::Server::Server(ServerConnectionCb cb) {
   uv_tcp_init(edge::Loop::getDefault()->getUVLoop(), &this->_handle);
   this->_handle.data = this;
-  this->_cb = cb;
+  this->on("data", cb);
 }
 
 bool edge::net::Server::listen(int port) {
@@ -97,8 +96,6 @@ void edge::net::Server::_onConnection(uv_stream_t* handle, int status) {
   }
 
   socket->_startRead();
-  if (self->_cb != nullptr) {
-    self->_cb(socket);
-  }
+  self->emit("__data", socket);
   socket->once("close", [socket](uv_buf_t data) {});
 }

@@ -45,7 +45,8 @@ int main(int argc, char **argv) {
   });
   web.listen(5000);
 
-  auto server = edge::net::Server([](edge::net::SharedSocket socket) {
+  auto server = edge::net::Server();
+  server.subscribe([](edge::net::SharedSocket socket) {
     socket->pipe(socket);
   });
   server.listen(8000);
