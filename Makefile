@@ -1,4 +1,4 @@
-CC=g++
+CC=/usr/local/bin/g++-4.8
 
 UVDIR=dep/libuv
 HTTPDIR=dep/http-parser

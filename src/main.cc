@@ -22,6 +22,11 @@
 #include "process/stdin.h"
 #include "process/stdout.h"
 
+#include "rx/observable.h"
+#include "rx/observer.h"
+#include "rx/subscription.h"
+#include "rx/transformer.h"
+
 int main(int argc, char **argv) {
   auto loop = edge::Loop::getDefault();
 

@@ -16,6 +16,7 @@ namespace dns {
   typedef std::shared_ptr<std::vector<std::string>> SharedResponse;
   typedef std::function<void(edge::SharedError,
                              edge::dns::SharedResponse)> Callback;
+
   typedef struct ResolveData_s {
     uv_getaddrinfo_t req;
     edge::dns::Callback cb;

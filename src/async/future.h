@@ -49,7 +49,7 @@ public:
    *
    */
   static std::shared_ptr<Future<E, V>> sync(std::function<V()> computation) {
-    return edge::async::Future::value(computation);
+    return edge::async::Future::value(computation());
   }
 
   /**
